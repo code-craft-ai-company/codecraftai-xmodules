@@ -35,7 +35,7 @@ class TestActivateServiceLogging(unittest.TestCase):
             except Exception:
                 pass
 
-    def test_rotating_file_handler_added(self):
+    def test_activate_service_logging(self):
         loc = LoggingLocation(directory=self.tmpdir, basename="service")
         activate_service_logging(console_level=logging.INFO, file_level=logging.DEBUG, location=loc)
 
