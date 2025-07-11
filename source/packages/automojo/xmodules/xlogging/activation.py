@@ -171,7 +171,8 @@ def activate_interactive_console_logging(log_level: Union[str, int]=logging.INFO
     return
 
 
-def activate_commandline_logging(console_level:Union[str, int] = logging.ERROR, file_level: Union[str, int]=logging.DEBUG, location: LoggingLocation=None):
+def activate_commandline_logging(console_level: Union[str, int] = logging.ERROR, file_level: Union[str, int] = logging.DEBUG,
+                                 location: LoggingLocation = None, remote_id: Optional[str] = None):
     """
         Activates logging for commandline tools and commands where the user wants keep the log output to the console less verbose but still
         capture more detailed logs in a file.
@@ -181,7 +182,56 @@ def activate_commandline_logging(console_level:Union[str, int] = logging.ERROR, 
         :param location: Optional. Location of where to write log information.
         :param remote_id: Optional identifier that can be passed when a remote process or remote host and process are logging outside the main context.
     """
+    global ACTIVATED_MODE
+    global ACTIVATING_PROCESS
 
+    current_pid = os.getpid()
 
+    if ACTIVATING_PROCESS is not None:
+        if remote_id is None:
+            errmsg = "Logging must be activated with a 'remote_id' parameter from child processes."
+            raise SemanticError(errmsg)
+
+        if ACTIVATED_MODE is not None and ACTIVATING_PROCESS == current_pid:
+            errmsg = f"Logging has already been activated for mode {ACTIVATED_MODE} by process id={ACTIVATING_PROCESS}."
+            raise SemanticError(errmsg)
+
+        if ACTIVATED_MODE != ACTIVATION_MODE.COMMANDLINE:
+            errmsg = f"Logging was already activated for mode={ACTIVATED_MODE}, you cannot change the logging mode."
+            raise SemanticError(errmsg)
+    else:
+        ACTIVATING_PROCESS = current_pid
+        ACTIVATED_MODE = ACTIVATION_MODE.COMMANDLINE
+
+    logger = logging.getLogger()
+    logger.setLevel(min(console_level, file_level))
+
+    # Remove any existing handlers so we start clean
+    for handler in logger.handlers[:]:
+        logger.removeHandler(handler)
+
+    # Configure console handler
+    console_handler = logging.StreamHandler(stream=sys.stdout)
+    console_handler.setLevel(console_level)
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    console_handler.setFormatter(formatter)
+    logger.addHandler(console_handler)
+
+    # Configure file handler if a location is specified
+    if location:
+        log_dir = expand_path(location.directory)
+        os.makedirs(log_dir, exist_ok=True)
+
+        log_basename = location.basename
+        if remote_id is not None:
+            log_basename = f"{log_basename}-{remote_id}"
+        log_file = os.path.join(log_dir, f"{log_basename}{location.ext}")
+
+        file_handler = logging.FileHandler(log_file)
+        file_handler.setLevel(file_level)
+        file_handler.setFormatter(formatter)
+        logger.addHandler(file_handler)
+    else:
+        logger.addHandler(logging.NullHandler())
 
     return
