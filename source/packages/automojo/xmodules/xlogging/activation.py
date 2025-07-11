@@ -40,7 +40,9 @@ class ACTIVATION_MODE:
     COMMANDLINE = "commandline"
 
 
-def activate_service_logging(console_level:Union[str, int] = logging.ERROR, file_level: Union[str, int]=logging.DEBUG, location: LoggingLocation=None):
+def activate_service_logging(console_level:Union[str, int] = logging.ERROR, file_level: Union[str, int]=logging.DEBUG,
+                             location: LoggingLocation=None, remote_id: Optional[str] = None,
+                             max_bytes: int = 10 * 1024 * 1024, backup_count: int = 10):
     """
         Activates logging for a services.  This means the logging will be to a rotational log.
 
@@ -48,7 +50,64 @@ def activate_service_logging(console_level:Union[str, int] = logging.ERROR, file
         :param file_level: The log level to set the file logging to (default: DEBUG)
         :param location: Optional. Location of where to write log information.
         :param remote_id: Optional identifier that can be passed when a remote process or remote host and process are logging outside the main context.
+        :param max_bytes: Maximum size in bytes of the log file before rotation occurs.
+        :param backup_count: Number of rotated log files to keep.
     """
+
+    global ACTIVATED_MODE
+    global ACTIVATING_PROCESS
+
+    current_pid = os.getpid()
+
+    if ACTIVATING_PROCESS is not None:
+        if remote_id is None:
+            errmsg = "Logging must be activated with a 'remote_id' parameter from child processes."
+            raise SemanticError(errmsg)
+
+        if ACTIVATED_MODE is not None and ACTIVATING_PROCESS == current_pid:
+            errmsg = (f"Logging has already been activated for mode {ACTIVATED_MODE} "
+                      f"by process id={ACTIVATING_PROCESS}.")
+            raise SemanticError(errmsg)
+
+        if ACTIVATED_MODE != ACTIVATION_MODE.SERVICE:
+            errmsg = (f"Logging was already activated for mode={ACTIVATED_MODE}, "
+                      "you cannot change the logging mode.")
+            raise SemanticError(errmsg)
+    else:
+        ACTIVATING_PROCESS = current_pid
+        ACTIVATED_MODE = ACTIVATION_MODE.SERVICE
+
+    logger = logging.getLogger()
+    logger.setLevel(min(console_level, file_level))
+
+    # Remove any existing handlers so we have a clean slate
+    for handler in logger.handlers[:]:
+        logger.removeHandler(handler)
+
+    # Configure console handler
+    console_handler = logging.StreamHandler(stream=sys.stdout)
+    console_handler.setLevel(console_level)
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    console_handler.setFormatter(formatter)
+    logger.addHandler(console_handler)
+
+    # Configure rotating file handler if a location is specified
+    if location:
+        log_dir = expand_path(location.directory)
+        os.makedirs(log_dir, exist_ok=True)
+
+        log_basename = location.basename
+        if remote_id is not None:
+            log_basename = f"{log_basename}-{remote_id}"
+        log_file = os.path.join(log_dir, f"{log_basename}{location.ext}")
+
+        from logging.handlers import RotatingFileHandler
+        file_handler = RotatingFileHandler(log_file, maxBytes=max_bytes, backupCount=backup_count)
+        file_handler.setLevel(file_level)
+        file_handler.setFormatter(formatter)
+        logger.addHandler(file_handler)
+    else:
+        logger.addHandler(logging.NullHandler())
 
     return
 
