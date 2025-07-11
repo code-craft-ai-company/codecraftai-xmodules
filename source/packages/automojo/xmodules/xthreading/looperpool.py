@@ -16,8 +16,8 @@ from threading import RLock
 
 from automojo.errors.exceptions import LooperError
 
-from automojo.foundation.xthreading.looper import Looper
-from automojo.foundation.xthreading.looperqueue import LooperQueue, LooperQueueShutdown
+from automojo.xmodules.xthreading.looper import Looper
+from automojo.xmodules.xthreading.looperqueue import LooperQueue, LooperQueueShutdown
 
 class LooperPool:
     """

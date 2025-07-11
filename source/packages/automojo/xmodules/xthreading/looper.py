@@ -18,7 +18,7 @@ from threading import Event, Thread
 
 from automojo.errors.exceptions import AbstractMethodError, LooperError
 
-from automojo.foundation.xthreading.looperqueue import LooperQueue, LooperQueueShutdown
+from automojo.xmodules.xthreading.looperqueue import LooperQueue, LooperQueueShutdown
 
 class Looper:
     """
