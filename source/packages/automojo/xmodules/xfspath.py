@@ -1,5 +1,5 @@
 """
-.. module:: xpath
+.. module:: xfspath
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Module which contains additional helper functions for working with filesystem paths.
 

@@ -15,7 +15,7 @@ __credits__ = []
 import os
 import sys
 
-from automojo.xmodules.xpath import expand_path
+from automojo.xmodules.xfspath import expand_path
 
 def in_python_path(dir_to_check: str) -> bool:
     """

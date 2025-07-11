@@ -1,7 +1,7 @@
 """
 .. module:: xconvert
     :platform: Darwin, Linux, Unix, Windows
-    :synopsis: Module that contains functions for type conversions.
+    :synopsis: Module that contains functions for primitive type conversions.
 
 .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """

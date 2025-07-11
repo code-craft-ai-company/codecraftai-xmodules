@@ -19,7 +19,7 @@ import os
 import sys
 
 from automojo.errors.exceptions import SemanticError
-from automojo.xmodules.xpath import expand_path
+from automojo.xmodules.xfspath import expand_path
 
 ACTIVATING_PROCESS = None
 ACTIVATED_MODE = None
