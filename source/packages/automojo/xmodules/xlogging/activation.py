@@ -141,6 +141,7 @@ def activate_interactive_console_logging(log_level: Union[str, int]=logging.INFO
             raise SemanticError(errmsg)
     else:
         ACTIVATING_PROCESS =  current_pid
+        ACTIVATED_MODE = ACTIVATION_MODE.INTERACTIVE
     
 
     logger = logging.getLogger()
