@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from automojo.xmodules.xfspath import expand_path
+from automojo.xmodules.fspath import expand_path
 
 
 class TestXFspath(unittest.TestCase):
@@ -21,7 +21,7 @@ class TestXFspath(unittest.TestCase):
         def add_suffix(p):
             return p + 'A'
 
-        def to_upper(p):
+        def to_upper(p: str):
             return p.upper()
 
         result = expand_path('path', expansions=[add_suffix, to_upper])
