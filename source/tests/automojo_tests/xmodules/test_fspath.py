@@ -9,7 +9,7 @@ from automojo.xmodules.fspath import (
     ensure_directory_is_package
 )
 
-class TestXFspath(unittest.TestCase):
+class TestFspath(unittest.TestCase):
 
     def test_expand_path_defaults(self):
         os.environ['TEST_EXPAND'] = 'subdir'
