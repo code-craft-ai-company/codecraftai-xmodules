@@ -48,6 +48,20 @@ class TestXFspath(unittest.TestCase):
         self.assertEqual(result, 'PATHA')
         return
 
+    def test_ensure_directory_is_package(self):
+        with tempfile.TemporaryDirectory() as td:
+            ensure_directory_is_package(td, "Sample Package")
+            init_file = os.path.join(td, '__init__.py')
+            self.assertTrue(os.path.isfile(init_file))
+
+            with open(init_file, 'r') as initf:
+                content = initf.read().splitlines()
+
+            self.assertEqual(content[0], '"""')
+            self.assertIn('Sample Package', content[1])
+            self.assertEqual(content[2], '"""')
+        return
+
 
 if __name__ == '__main__':
     unittest.main()
