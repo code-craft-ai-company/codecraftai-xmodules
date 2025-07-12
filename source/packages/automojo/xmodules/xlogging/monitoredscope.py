@@ -18,7 +18,6 @@ from types import TracebackType
 
 import logging
 import os
-import threading
 import uuid
 
 from datetime import datetime, timedelta
