@@ -5,7 +5,7 @@ name = "automojo-errors"
 version = "0.0.1"
 description = "Automation Mojo - Errors"
 optional = false
-python-versions = ">=3.11,<4.0"
+python-versions = ">=3.10,<4.0"
 files = []
 develop = false
 
@@ -13,7 +13,7 @@ develop = false
 type = "git"
 url = "https://github.com/automationmojo/automojo-errors.git"
 reference = "main"
-resolved_reference = "5158a1e084e796ba7d053242437fc9ff0f704b8f"
+resolved_reference = "c15162ca9532e43297208ef34a227003d2f6f2e1"
 
 [[package]]
 name = "automojo-waiting"
@@ -28,9 +28,9 @@ develop = false
 type = "git"
 url = "https://github.com/automationmojo/automojo-waiting.git"
 reference = "main"
-resolved_reference = "11a886189ca949a38a09967bc0f17d6fd9ae6b85"
+resolved_reference = "672c1f40c9ad01543f5f304abadd4d2da2c18dcd"
 
 [metadata]
 lock-version = "2.0"
-python-versions = ">=3.11,<4.0"
-content-hash = "964bb632f63ed00e5fe0546713cad9db8ffed0d84910abce5c1f9212dbb1ad70"
+python-versions = ">=3.10,<4.0"
+content-hash = "6c488a1712603ee1fdfb25a50ffb9fcebadf7df1d48578c987b2a95afe5ed071"
