@@ -52,6 +52,28 @@ class TestActivateServiceLogging(unittest.TestCase):
         self.assertTrue(rfh)
         self.assertTrue(os.path.isfile(os.path.join(self.tmpdir, "service.log")))
 
+    def test_activate_service_logging_child_remote_id(self):
+        loc = LoggingLocation(directory=self.tmpdir, basename="service")
+        activate_service_logging(console_level=logging.INFO, file_level=logging.DEBUG, location=loc)
+
+        child_pid = os.fork()
+        if child_pid == 0:
+            try:
+                pid = os.getpid()
+                activate_service_logging(
+                    console_level=logging.INFO,
+                    file_level=logging.DEBUG,
+                    location=loc,
+                    remote_id=str(pid),
+                )
+                expected = os.path.join(self.tmpdir, f"service-{pid}.log")
+                os._exit(0 if os.path.isfile(expected) else 1)
+            except Exception:
+                os._exit(1)
+        else:
+            _, status = os.waitpid(child_pid, 0)
+            self.assertEqual(os.WEXITSTATUS(status), 0)
+
 
 class TestActivateCommandlineLogging(unittest.TestCase):
 
@@ -87,6 +109,28 @@ class TestActivateCommandlineLogging(unittest.TestCase):
         fh = [h for h in logger.handlers if isinstance(h, FileHandler)]
         self.assertTrue(fh)
         self.assertTrue(os.path.isfile(os.path.join(self.tmpdir, "cmd.log")))
+
+    def test_activate_commandline_logging_child_remote_id(self):
+        loc = LoggingLocation(directory=self.tmpdir, basename="cmd")
+        activate_commandline_logging(console_level=logging.WARNING, file_level=logging.DEBUG, location=loc)
+
+        child_pid = os.fork()
+        if child_pid == 0:
+            try:
+                pid = os.getpid()
+                activate_commandline_logging(
+                    console_level=logging.WARNING,
+                    file_level=logging.DEBUG,
+                    location=loc,
+                    remote_id=str(pid),
+                )
+                expected = os.path.join(self.tmpdir, f"cmd-{pid}.log")
+                os._exit(0 if os.path.isfile(expected) else 1)
+            except Exception:
+                os._exit(1)
+        else:
+            _, status = os.waitpid(child_pid, 0)
+            self.assertEqual(os.WEXITSTATUS(status), 0)
 
 
 class TestActivateInteractiveConsoleLogging(unittest.TestCase):
@@ -125,6 +169,27 @@ class TestActivateInteractiveConsoleLogging(unittest.TestCase):
         self.assertTrue(fh)
         self.assertFalse(sh)
         self.assertTrue(os.path.isfile(os.path.join(self.tmpdir, "int.log")))
+
+    def test_activate_interactive_console_logging_child_remote_id(self):
+        loc = LoggingLocation(directory=self.tmpdir, basename="int")
+        activate_interactive_console_logging(log_level=logging.INFO, location=loc)
+
+        child_pid = os.fork()
+        if child_pid == 0:
+            try:
+                pid = os.getpid()
+                activate_interactive_console_logging(
+                    log_level=logging.INFO,
+                    location=loc,
+                    remote_id=str(pid),
+                )
+                expected = os.path.join(self.tmpdir, f"int-{pid}.log")
+                os._exit(0 if os.path.isfile(expected) else 1)
+            except Exception:
+                os._exit(1)
+        else:
+            _, status = os.waitpid(child_pid, 0)
+            self.assertEqual(os.WEXITSTATUS(status), 0)
 
     def test_activate_interactive_console_logging_nullhandler(self):
         activate_interactive_console_logging(log_level=logging.INFO)
