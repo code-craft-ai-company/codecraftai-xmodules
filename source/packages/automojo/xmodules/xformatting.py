@@ -24,6 +24,9 @@ class CommandOutputFormat:
     YAML = 2
 
 
+NORMALIZE_TRANSLATION_TABLE = str.maketrans({'/r': ' ', '/n': ' ', '/t': ' '})
+
+
 def format_command_result(msg: str, command: str, status: int, stdout: str, stderr: str, exp_status: Optional[List[int]]=None, target: Optional[str]=None) -> str:
     """
         Takes a message and command results and formats a message for output to the logs.
@@ -129,6 +132,23 @@ def indent_lines_list(msglines: List[str], level: int, indent: int=4) -> List[st
         outlines.append(f"{pfx}{nxtline}")
 
     return outlines
+
+
+def normalize_whitespace(val: str) -> str:
+    """
+        Converts all whitespace in the given string to single spaces.
+
+        :param val: The string value to normalize.
+
+        :returns: The normalized string.
+    """
+    val = val.strip().translate(NORMALIZE_TRANSLATION_TABLE)
+
+    # Convert any consecutive spaces into a single space.
+    while val.find("  ") > -1:
+        val = val.replace("  ", " ")
+    
+    return val
 
 
 def split_and_indent_lines(msg: str, level: int, indent: int=4, pre_strip_leading: bool=True) -> List[str]:
