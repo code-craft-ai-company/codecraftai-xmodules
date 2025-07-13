@@ -17,7 +17,14 @@ from typing import List, Optional
 
 import os
 
-TRANSLATE_TABLE_NORMALIZE_FOR_PATH = str.maketrans(",.:;", "    ")
+TRANSLATE_TABLE_NORMALIZE_FOR_PATH = str.maketrans({
+    ",": " ",
+    ".": " ",
+    ":": " ",
+    ";": " "
+})
+
+{'/r': ' ', '/n': ' ', '/t': ' '}
 
 DEFAULT_PATH_EXPANSIONS = [
     os.path.expanduser,

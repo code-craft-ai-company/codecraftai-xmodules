@@ -24,8 +24,11 @@ class CommandOutputFormat:
     YAML = 2
 
 
-NORMALIZE_TRANSLATION_TABLE = str.maketrans({'/r': ' ', '/n': ' ', '/t': ' '})
-
+NORMALIZE_TRANSLATION_TABLE = str.maketrans({
+    '/r': ' ',
+    '/n': ' ',
+    '/t': ' '
+})
 
 def format_command_result(msg: str, command: str, status: int, stdout: str, stderr: str, exp_status: Optional[List[int]]=None, target: Optional[str]=None) -> str:
     """
