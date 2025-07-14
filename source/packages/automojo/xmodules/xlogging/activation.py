@@ -85,7 +85,7 @@ def activate_service_logging(console_level:Union[str, int] = logging.ERROR, file
     else:
         ACTIVATED_INFO = ActivationInfo(current_pid, ACTIVATION_MODE.SERVICE)
 
-    reinitialize_logging_as_service(console_level, file_level, location, max_bytes, backup_count, log_branches)
+    reinitialize_logging_as_service(console_level, file_level, location, max_bytes, backup_count, log_branches=log_branches)
 
     return
 
@@ -126,7 +126,7 @@ def activate_interactive_console_logging(file_level: Union[str, int]=logging.INF
         ACTIVATED_INFO = ActivationInfo(current_pid, ACTIVATION_MODE.INTERACTIVE)
     
 
-    reinitialize_logging_as_interactive(file_level, location, log_branches)
+    reinitialize_logging_as_interactive(file_level, location, log_branches=log_branches)
 
     return
 
@@ -166,7 +166,7 @@ def activate_standard_file_logging(console_level: Union[str, int] = logging.ERRO
     else:
         ACTIVATED_INFO = ActivationInfo(current_pid, ACTIVATION_MODE.COMMANDLINE)
 
-    reinitialize_logging_to_standard_file(console_level, file_level, location, log_branches)
+    reinitialize_logging_to_standard_file(console_level, file_level, location, log_branches=log_branches)
 
     return
 
