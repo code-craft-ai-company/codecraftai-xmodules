@@ -131,7 +131,7 @@ def reinitialize_logging_as_interactive(file_level: Union[int, str], location: L
     # and use it to log that the logging as been initialized.
     logger: EnhancedLogger = logging.getLogger()
 
-    if isinstance(EnhancedLogger):
+    if isinstance(logger, EnhancedLogger):
         logger.section("Logging Initialized")
 
     return logfile_complete
@@ -237,7 +237,7 @@ def reinitialize_logging_to_standard_file(console_level: Union[int, str], logfil
     # and use it to log that the logging as been initialized.
     logger: EnhancedLogger = logging.getLogger()
 
-    if isinstance(EnhancedLogger):
+    if isinstance(logger, EnhancedLogger):
         logger.section("Logging Initialized")
 
     return logfile_complete, logfile_reduced
@@ -330,7 +330,7 @@ def reinitialize_logging_as_service(console_level: Union[int, str], logfile_leve
     # and use it to log that the logging as been initialized.
     logger: EnhancedLogger = logging.getLogger()
 
-    if isinstance(EnhancedLogger):
+    if isinstance(logger, EnhancedLogger):
         logger.section("Logging Initialized")
 
     return logfile_complete
