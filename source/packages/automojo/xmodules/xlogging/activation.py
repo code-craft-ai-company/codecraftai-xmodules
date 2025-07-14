@@ -12,32 +12,35 @@ __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
 
-from typing import Optional, Union
+from typing import Dict, List, Optional, Type, Union
 
 import logging
+import logging.handlers
 import os
 import sys
+
+from enum import Enum
 
 from automojo.errors.exceptions import SemanticError
 from automojo.xmodules.fspath import expand_path
 
-ACTIVATING_PROCESS = None
-ACTIVATED_MODE = None
+from automojo.xmodules.xlogging.enhancedloggers import EnhancedRootLogger, SWAPPABLE_HOOKS
+from automojo.xmodules.xlogging.recordfilters import GreaterOrEqualRecordFilter, LessThanRecordFilter
 
-
-class LoggingLocation:
-
-    def __init__(self, directory: str, basename: str, ext: Optional[str] = ".log"):
-        self.directory = directory
-        self.basename = basename
-        self.ext = ext
-        return
-
-
-class ACTIVATION_MODE:
+class ACTIVATION_MODE(str, Enum):
     SERVICE = "service"
     INTERACTIVE = "interactive"
     COMMANDLINE = "commandline"
+
+class ActivationInfo:
+
+    def __init__(self, process_id: int, activation_mode: ACTIVATION_MODE):
+        self.process_id = process_id
+        self.activation_mode = activation_mode
+        return
+
+
+ACTIVATED_INFO: ActivationInfo = None
 
 
 def activate_service_logging(console_level:Union[str, int] = logging.ERROR, file_level: Union[str, int]=logging.DEBUG,
@@ -54,28 +57,27 @@ def activate_service_logging(console_level:Union[str, int] = logging.ERROR, file
         :param backup_count: Number of rotated log files to keep.
     """
 
-    global ACTIVATED_MODE
-    global ACTIVATING_PROCESS
+    global ACTIVATED_INFO
 
     current_pid = os.getpid()
 
-    if ACTIVATING_PROCESS is not None:
-        if remote_id is None:
-            errmsg = "Logging must be activated with a 'remote_id' parameter from child processes."
+    if ACTIVATED_INFO is not None:
+        if ACTIVATED_INFO.process_id != current_pid:
+            if remote_id is None:
+                errmsg = "Logging must be activated with a 'remote_id' parameter from child processes."
+                raise SemanticError(errmsg)
+            
+            if ACTIVATED_INFO.activation_mode !=  ACTIVATION_MODE.SERVICE:
+                errmsg = (f"Logging was already activated for mode={ACTIVATED_INFO.activation_mode}, "
+                            "you cannot change the logging mode.")
+                raise SemanticError(errmsg)
+        else:
+            errmsg = (f"Logging has already been activated for mode {ACTIVATED_INFO.activation_mode} "
+                      f"by process id={ACTIVATED_INFO.process_id}.")
             raise SemanticError(errmsg)
 
-        if ACTIVATED_MODE is not None and ACTIVATING_PROCESS == current_pid:
-            errmsg = (f"Logging has already been activated for mode {ACTIVATED_MODE} "
-                      f"by process id={ACTIVATING_PROCESS}.")
-            raise SemanticError(errmsg)
-
-        if ACTIVATED_MODE != ACTIVATION_MODE.SERVICE:
-            errmsg = (f"Logging was already activated for mode={ACTIVATED_MODE}, "
-                      "you cannot change the logging mode.")
-            raise SemanticError(errmsg)
     else:
-        ACTIVATING_PROCESS = current_pid
-        ACTIVATED_MODE = ACTIVATION_MODE.SERVICE
+        ACTIVATED_INFO = ActivationInfo(current_pid, ACTIVATION_MODE.SERVICE)
 
     logger = logging.getLogger()
     logger.setLevel(min(console_level, file_level))
@@ -122,26 +124,27 @@ def activate_interactive_console_logging(log_level: Union[str, int]=logging.INFO
         :param remote_id: Optional identifier that can be passed when a remote process or remote host and process are logging outside the main context.
     """
 
-    global ACTIVATED_MODE
-    global ACTIVATING_PROCESS
+    global ACTIVATED_INFO
 
     current_pid = os.getpid()
 
-    if ACTIVATING_PROCESS is not None:
-        if remote_id is None:
-            errmsg = f"Logging must be activated with a 'remote_id' parameter from child processes."
+    if ACTIVATED_INFO is not None:
+        if ACTIVATED_INFO.process_id != current_pid:
+            if remote_id is None:
+                errmsg = "Logging must be activated with a 'remote_id' parameter from child processes."
+                raise SemanticError(errmsg)
+            
+            if ACTIVATED_INFO.activation_mode !=  ACTIVATION_MODE.INTERACTIVE:
+                errmsg = (f"Logging was already activated for mode={ACTIVATED_INFO.activation_mode}, "
+                            "you cannot change the logging mode.")
+                raise SemanticError(errmsg)
+        else:
+            errmsg = (f"Logging has already been activated for mode {ACTIVATED_INFO.activation_mode} "
+                      f"by process id={ACTIVATED_INFO.process_id}.")
             raise SemanticError(errmsg)
 
-        if ACTIVATED_MODE is not None and ACTIVATING_PROCESS == current_pid:
-            errmsg = f"Logging has already been activated for mode {ACTIVATED_MODE} by process id={ACTIVATING_PROCESS}."
-            raise SemanticError(errmsg)
-        
-        if ACTIVATED_MODE != ACTIVATION_MODE.INTERACTIVE:
-            errmsg = f"Logging was already activated for mode={ACTIVATED_MODE}, you cannot change the logging mode."
-            raise SemanticError(errmsg)
     else:
-        ACTIVATING_PROCESS =  current_pid
-        ACTIVATED_MODE = ACTIVATION_MODE.INTERACTIVE
+        ACTIVATED_INFO = ActivationInfo(current_pid, ACTIVATION_MODE.INTERACTIVE)
     
 
     logger = logging.getLogger()
@@ -183,26 +186,27 @@ def activate_commandline_logging(console_level: Union[str, int] = logging.ERROR,
         :param location: Optional. Location of where to write log information.
         :param remote_id: Optional identifier that can be passed when a remote process or remote host and process are logging outside the main context.
     """
-    global ACTIVATED_MODE
-    global ACTIVATING_PROCESS
+    global ACTIVATED_INFO
 
     current_pid = os.getpid()
 
-    if ACTIVATING_PROCESS is not None:
-        if remote_id is None:
-            errmsg = "Logging must be activated with a 'remote_id' parameter from child processes."
+    if ACTIVATED_INFO is not None:
+        if ACTIVATED_INFO.process_id != current_pid:
+            if remote_id is None:
+                errmsg = "Logging must be activated with a 'remote_id' parameter from child processes."
+                raise SemanticError(errmsg)
+            
+            if ACTIVATED_INFO.activation_mode !=  ACTIVATION_MODE.COMMANDLINE:
+                errmsg = (f"Logging was already activated for mode={ACTIVATED_INFO.activation_mode}, "
+                            "you cannot change the logging mode.")
+                raise SemanticError(errmsg)
+        else:
+            errmsg = (f"Logging has already been activated for mode {ACTIVATED_INFO.activation_mode} "
+                      f"by process id={ACTIVATED_INFO.process_id}.")
             raise SemanticError(errmsg)
 
-        if ACTIVATED_MODE is not None and ACTIVATING_PROCESS == current_pid:
-            errmsg = f"Logging has already been activated for mode {ACTIVATED_MODE} by process id={ACTIVATING_PROCESS}."
-            raise SemanticError(errmsg)
-
-        if ACTIVATED_MODE != ACTIVATION_MODE.COMMANDLINE:
-            errmsg = f"Logging was already activated for mode={ACTIVATED_MODE}, you cannot change the logging mode."
-            raise SemanticError(errmsg)
     else:
-        ACTIVATING_PROCESS = current_pid
-        ACTIVATED_MODE = ACTIVATION_MODE.COMMANDLINE
+        ACTIVATED_INFO = ActivationInfo(current_pid, ACTIVATION_MODE.COMMANDLINE)
 
     logger = logging.getLogger()
     logger.setLevel(min(console_level, file_level))
@@ -236,3 +240,5 @@ def activate_commandline_logging(console_level: Union[str, int] = logging.ERROR,
         logger.addHandler(logging.NullHandler())
 
     return
+
+

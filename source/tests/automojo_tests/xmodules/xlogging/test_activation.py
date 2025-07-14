@@ -9,8 +9,8 @@ from logging import FileHandler, NullHandler
 import sys
 
 from automojo.xmodules.xlogging import activation
+from automojo.xmodules.xlogging.parameters import LoggingLocation
 from automojo.xmodules.xlogging.activation import (
-    LoggingLocation,
     activate_service_logging,
     activate_commandline_logging,
     activate_interactive_console_logging,
@@ -21,8 +21,7 @@ class TestActivateServiceLogging(unittest.TestCase):
 
     def setUp(self):
         self.tmpdir = tempfile.mkdtemp()
-        activation.ACTIVATING_PROCESS = None
-        activation.ACTIVATED_MODE = None
+        activation.ACTIVATED_INFO = None
         logger = logging.getLogger()
         for handler in logger.handlers[:]:
             logger.removeHandler(handler)
@@ -33,8 +32,7 @@ class TestActivateServiceLogging(unittest.TestCase):
 
     def tearDown(self):
         shutil.rmtree(self.tmpdir, ignore_errors=True)
-        activation.ACTIVATING_PROCESS = None
-        activation.ACTIVATED_MODE = None
+        activation.ACTIVATED_INFO = None
         logger = logging.getLogger()
         for handler in logger.handlers[:]:
             logger.removeHandler(handler)
@@ -79,8 +77,7 @@ class TestActivateCommandlineLogging(unittest.TestCase):
 
     def setUp(self):
         self.tmpdir = tempfile.mkdtemp()
-        activation.ACTIVATING_PROCESS = None
-        activation.ACTIVATED_MODE = None
+        activation.ACTIVATED_INFO = None
         logger = logging.getLogger()
         for handler in logger.handlers[:]:
             logger.removeHandler(handler)
@@ -91,8 +88,7 @@ class TestActivateCommandlineLogging(unittest.TestCase):
 
     def tearDown(self):
         shutil.rmtree(self.tmpdir, ignore_errors=True)
-        activation.ACTIVATING_PROCESS = None
-        activation.ACTIVATED_MODE = None
+        activation.ACTIVATED_INFO = None
         logger = logging.getLogger()
         for handler in logger.handlers[:]:
             logger.removeHandler(handler)
@@ -137,8 +133,7 @@ class TestActivateInteractiveConsoleLogging(unittest.TestCase):
 
     def setUp(self):
         self.tmpdir = tempfile.mkdtemp()
-        activation.ACTIVATING_PROCESS = None
-        activation.ACTIVATED_MODE = None
+        activation.ACTIVATED_INFO = None
         logger = logging.getLogger()
         for handler in logger.handlers[:]:
             logger.removeHandler(handler)
@@ -149,8 +144,7 @@ class TestActivateInteractiveConsoleLogging(unittest.TestCase):
 
     def tearDown(self):
         shutil.rmtree(self.tmpdir, ignore_errors=True)
-        activation.ACTIVATING_PROCESS = None
-        activation.ACTIVATED_MODE = None
+        activation.ACTIVATED_INFO = None
         logger = logging.getLogger()
         for handler in logger.handlers[:]:
             logger.removeHandler(handler)

@@ -25,7 +25,7 @@ class LogLevel(IntEnum):
     CRITICAL = logging.CRITICAL
     QUIET = 1000
 
-
 logging.addLevelName(LogLevel.QUIET.value, "QUIET")
 
 LOG_LEVEL_NAMES = [member.name for member in LogLevel]
+
