@@ -85,7 +85,13 @@ def activate_service_logging(location: LoggingLocation, console_level:Union[str,
     else:
         ACTIVATED_INFO = ActivationInfo(current_pid, ACTIVATION_MODE.SERVICE)
 
-    reinitialize_logging_as_service(location, console_level, file_level, max_bytes, backup_count, log_branches=log_branches)
+    param_location = None
+    if remote_id is not None:
+        param_location = LoggingLocation(location.directory, f"{location.basename}-{remote_id}", location.ext)
+    else:
+        param_location = location
+
+    reinitialize_logging_as_service(param_location, console_level, file_level, max_bytes, backup_count, log_branches=log_branches)
 
     return
 
@@ -125,7 +131,13 @@ def activate_interactive_console_logging(location: LoggingLocation, file_level: 
     else:
         ACTIVATED_INFO = ActivationInfo(current_pid, ACTIVATION_MODE.INTERACTIVE)
 
-    reinitialize_logging_as_interactive(location, file_level, log_branches=log_branches)
+    param_location = None
+    if remote_id is not None:
+        param_location = LoggingLocation(location.directory, f"{location.basename}-{remote_id}", location.ext)
+    else:
+        param_location = location
+
+    reinitialize_logging_as_interactive(param_location, file_level, log_branches=log_branches)
 
     return
 
@@ -165,7 +177,13 @@ def activate_standard_file_logging(location: LoggingLocation, console_level: Uni
     else:
         ACTIVATED_INFO = ActivationInfo(current_pid, ACTIVATION_MODE.COMMANDLINE)
 
-    reinitialize_logging_to_standard_file(location, console_level, file_level, log_branches=log_branches)
+    param_location = None
+    if remote_id is not None:
+        param_location = LoggingLocation(location.directory, f"{location.basename}-{remote_id}", location.ext)
+    else:
+        param_location = location
+
+    reinitialize_logging_to_standard_file(param_location, console_level, file_level, log_branches=log_branches)
 
     return
 

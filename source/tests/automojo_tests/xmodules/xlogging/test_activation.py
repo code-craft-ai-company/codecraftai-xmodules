@@ -196,9 +196,17 @@ class TestActivateInteractiveConsoleLogging(unittest.TestCase):
                     file_level=logging.INFO,
                     remote_id=str(pid),
                 )
+
+                clogger = logging.getLogger()
+                clogger.info("Blah")
+
                 expected = os.path.join(self.tmpdir, f"int-{pid}.log")
-                os._exit(0 if os.path.isfile(expected) else 1)
+                if os.path.isfile(expected):
+                    os._exit(0)
+                else:
+                    os._exit(1)
             except Exception as xcpt:
+                print(xcpt)
                 os._exit(1)
         else:
             _, status = os.waitpid(child_pid, 0)
