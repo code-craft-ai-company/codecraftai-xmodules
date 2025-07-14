@@ -12,7 +12,7 @@ from automojo.xmodules.xlogging import activation
 from automojo.xmodules.xlogging.parameters import LoggingLocation
 from automojo.xmodules.xlogging.activation import (
     activate_service_logging,
-    activate_commandline_logging,
+    activate_standard_file_logging,
     activate_interactive_console_logging,
 )
 
@@ -99,7 +99,7 @@ class TestActivateCommandlineLogging(unittest.TestCase):
 
     def test_activate_commandline_logging(self):
         loc = LoggingLocation(directory=self.tmpdir, basename="cmd")
-        activate_commandline_logging(console_level=logging.WARNING, file_level=logging.DEBUG, location=loc)
+        activate_standard_file_logging(console_level=logging.WARNING, file_level=logging.DEBUG, location=loc)
 
         logger = logging.getLogger()
         fh = [h for h in logger.handlers if isinstance(h, FileHandler)]
@@ -108,13 +108,13 @@ class TestActivateCommandlineLogging(unittest.TestCase):
 
     def test_activate_commandline_logging_child_remote_id(self):
         loc = LoggingLocation(directory=self.tmpdir, basename="cmd")
-        activate_commandline_logging(console_level=logging.WARNING, file_level=logging.DEBUG, location=loc)
+        activate_standard_file_logging(console_level=logging.WARNING, file_level=logging.DEBUG, location=loc)
 
         child_pid = os.fork()
         if child_pid == 0:
             try:
                 pid = os.getpid()
-                activate_commandline_logging(
+                activate_standard_file_logging(
                     console_level=logging.WARNING,
                     file_level=logging.DEBUG,
                     location=loc,
