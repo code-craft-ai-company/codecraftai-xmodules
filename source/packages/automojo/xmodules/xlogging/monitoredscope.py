@@ -30,6 +30,7 @@ DEFAULT_MONITORED_SCOPE_NOTIFY_DELAY = timedelta(seconds=60)
 
 logger = logging.getLogger()
 
+
 class MonitoredScope:
     """
         The :class:`MonitoredScope` object is utilized in order to provide monitoring on threads

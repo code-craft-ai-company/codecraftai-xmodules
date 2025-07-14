@@ -12,12 +12,10 @@ import logging.handlers
 import os
 import traceback
 
-from enum import Enum
 
-from automojo.errors.exceptions import SemanticError
 from automojo.xmodules.fspath import expand_path
 
-from automojo.xmodules.xlogging.levels import LogLevel
+
 from automojo.xmodules.xlogging.parameters import LoggingLocation, LoggingReduction
 from automojo.xmodules.xlogging.enhancedloggers import (
     use_enhanced_logger,

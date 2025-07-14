@@ -12,10 +12,9 @@ __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
 
-from typing import Dict, List, Optional, Type, Union
+from typing import Optional, Union
 
 import logging
-import logging.handlers
 import os
 import sys
 
@@ -24,8 +23,7 @@ from enum import Enum
 from automojo.errors.exceptions import SemanticError
 from automojo.xmodules.fspath import expand_path
 
-from automojo.xmodules.xlogging.enhancedloggers import EnhancedRootLogger, SWAPPABLE_HOOKS
-from automojo.xmodules.xlogging.recordfilters import GreaterOrEqualRecordFilter, LessThanRecordFilter
+from automojo.xmodules.xlogging.parameters import LoggingLocation
 
 class ACTIVATION_MODE(str, Enum):
     SERVICE = "service"
