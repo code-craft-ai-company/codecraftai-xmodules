@@ -16,7 +16,7 @@ __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
 
-from typing import List, Callable
+from typing import List
 
 import inspect
 import logging
@@ -52,17 +52,17 @@ def in_vscode_debugger() -> bool:
     return invscode
 
 
-def debugger_wellknown_breakpoint_entry(debugger: str, breakpoint_name: str, get_available_breakpoints: Callable[[], List[str]]) -> None:
+def debugger_wellknown_breakpoint_entry(debugger: str, breakpoint_name: str, configured_breakpoints: List[str]) -> None:
     """
         Triggers a breakpoint if the named well known breakpoint is enabled
         in the current context.
 
+        :param debugger: The name of the debugger to use when a breakpoint is hit.
         :param breakpoint_name: Key identifying the breakpoint.
+        :param configured_breakpoints: A list of breakpoints that have been configured by the user.
     """
 
-    available_breakpoints = get_available_breakpoints()
-
-    if breakpoint_name in available_breakpoints:
+    if breakpoint_name in configured_breakpoints:
         if debugger == DEBUGGER.PDB:
             # The debug flag was passed on the commandline so we break here.'.format(current_indent))
             import pdb
@@ -83,19 +83,19 @@ def debugger_wellknown_breakpoint_entry(debugger: str, breakpoint_name: str, get
 
 
 def debugger_wellknown_breakpoint_code_append(debugger: str, breakpoint_name: str, code_lines: list, current_indent: str,
-                                              get_available_breakpoints: Callable[[], List[str]]) -> None:
+                                              configured_breakpoints: List[str]) -> None:
     """
         Appends source lines that trigger a well known breakpoint when
         enabled in the debug context.
 
+        :param debugger: The name of the debugger to use when a breakpoint is hit.
         :param breakpoint_name: Identifier for the breakpoint.
         :param code_lines: List of lines being emitted.
         :param current_indent: Current indentation prefix for the new lines.
+        :param configured_breakpoints: A list of breakpoints that have been configured by the user.
     """
 
-    available_breakpoints = get_available_breakpoints()
-
-    if breakpoint_name in available_breakpoints:
+    if breakpoint_name in configured_breakpoints:
         if debugger == DEBUGGER.PDB:
             code_lines.append('')
             code_lines.append('{}# The debug flag was passed on the commandline so we break here.'.format(current_indent))
