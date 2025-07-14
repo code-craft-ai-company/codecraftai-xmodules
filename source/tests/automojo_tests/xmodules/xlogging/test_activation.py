@@ -29,6 +29,7 @@ class TestActivateServiceLogging(unittest.TestCase):
                 handler.close()
             except Exception:
                 pass
+        return
 
     def tearDown(self):
         shutil.rmtree(self.tmpdir, ignore_errors=True)
@@ -40,19 +41,21 @@ class TestActivateServiceLogging(unittest.TestCase):
                 handler.close()
             except Exception:
                 pass
+        return
 
     def test_activate_service_logging(self):
         loc = LoggingLocation(directory=self.tmpdir, basename="service")
-        activate_service_logging(console_level=logging.INFO, file_level=logging.DEBUG, location=loc)
+        activate_service_logging(location=loc, console_level=logging.INFO, file_level=logging.DEBUG)
 
         logger = logging.getLogger()
         rfh = [h for h in logger.handlers if isinstance(h, RotatingFileHandler)]
         self.assertTrue(rfh)
         self.assertTrue(os.path.isfile(os.path.join(self.tmpdir, "service.log")))
+        return
 
     def test_activate_service_logging_child_remote_id(self):
         loc = LoggingLocation(directory=self.tmpdir, basename="service")
-        activate_service_logging(console_level=logging.INFO, file_level=logging.DEBUG, location=loc)
+        activate_service_logging(location=loc, console_level=logging.INFO, file_level=logging.DEBUG)
 
         child_pid = os.fork()
         if child_pid == 0:
@@ -71,9 +74,10 @@ class TestActivateServiceLogging(unittest.TestCase):
         else:
             _, status = os.waitpid(child_pid, 0)
             self.assertEqual(os.WEXITSTATUS(status), 0)
+        return
 
 
-class TestActivateCommandlineLogging(unittest.TestCase):
+class TestActivateStandardFileLogging(unittest.TestCase):
 
     def setUp(self):
         self.tmpdir = tempfile.mkdtemp()
@@ -85,6 +89,7 @@ class TestActivateCommandlineLogging(unittest.TestCase):
                 handler.close()
             except Exception:
                 pass
+        return
 
     def tearDown(self):
         shutil.rmtree(self.tmpdir, ignore_errors=True)
@@ -96,19 +101,21 @@ class TestActivateCommandlineLogging(unittest.TestCase):
                 handler.close()
             except Exception:
                 pass
+        return
 
-    def test_activate_commandline_logging(self):
+    def test_activate_standard_file_logging(self):
         loc = LoggingLocation(directory=self.tmpdir, basename="cmd")
-        activate_standard_file_logging(console_level=logging.WARNING, file_level=logging.DEBUG, location=loc)
+        activate_standard_file_logging(location=loc, console_level=logging.WARNING, file_level=logging.DEBUG)
 
         logger = logging.getLogger()
         fh = [h for h in logger.handlers if isinstance(h, FileHandler)]
         self.assertTrue(fh)
         self.assertTrue(os.path.isfile(os.path.join(self.tmpdir, "cmd.log")))
+        return
 
-    def test_activate_commandline_logging_child_remote_id(self):
+    def test_activate_standard_file_logging_child_remote_id(self):
         loc = LoggingLocation(directory=self.tmpdir, basename="cmd")
-        activate_standard_file_logging(console_level=logging.WARNING, file_level=logging.DEBUG, location=loc)
+        activate_standard_file_logging(location=loc, console_level=logging.WARNING, file_level=logging.DEBUG)
 
         child_pid = os.fork()
         if child_pid == 0:
@@ -127,7 +134,7 @@ class TestActivateCommandlineLogging(unittest.TestCase):
         else:
             _, status = os.waitpid(child_pid, 0)
             self.assertEqual(os.WEXITSTATUS(status), 0)
-
+        return
 
 class TestActivateInteractiveConsoleLogging(unittest.TestCase):
 
@@ -141,6 +148,7 @@ class TestActivateInteractiveConsoleLogging(unittest.TestCase):
                 handler.close()
             except Exception:
                 pass
+        return
 
     def tearDown(self):
         shutil.rmtree(self.tmpdir, ignore_errors=True)
@@ -152,47 +160,50 @@ class TestActivateInteractiveConsoleLogging(unittest.TestCase):
                 handler.close()
             except Exception:
                 pass
+        return
 
     def test_activate_interactive_console_logging_with_file(self):
         loc = LoggingLocation(directory=self.tmpdir, basename="int")
-        activate_interactive_console_logging(log_level=logging.INFO, location=loc)
+        activate_interactive_console_logging(location=loc, file_level=logging.INFO)
 
         logger = logging.getLogger()
-        fh = [h for h in logger.handlers if isinstance(h, FileHandler)]
-        sh = [h for h in logger.handlers if getattr(h, 'stream', None) in (sys.stdout, sys.stderr)]
+        
+        fh = []
+        for h in logger.handlers:
+            if isinstance(h, FileHandler):
+                fh.append(h)
+
+        sh = []
+        for h in logger.handlers:
+            if getattr(h, 'stream', None) in (sys.stdout, sys.stderr):
+                sh.append(h)
+        
         self.assertTrue(fh)
         self.assertFalse(sh)
         self.assertTrue(os.path.isfile(os.path.join(self.tmpdir, "int.log")))
+        return
 
     def test_activate_interactive_console_logging_child_remote_id(self):
         loc = LoggingLocation(directory=self.tmpdir, basename="int")
-        activate_interactive_console_logging(log_level=logging.INFO, location=loc)
+        activate_interactive_console_logging(location=loc, file_level=logging.INFO)
 
         child_pid = os.fork()
         if child_pid == 0:
             try:
                 pid = os.getpid()
                 activate_interactive_console_logging(
-                    log_level=logging.INFO,
                     location=loc,
+                    file_level=logging.INFO,
                     remote_id=str(pid),
                 )
                 expected = os.path.join(self.tmpdir, f"int-{pid}.log")
                 os._exit(0 if os.path.isfile(expected) else 1)
-            except Exception:
+            except Exception as xcpt:
                 os._exit(1)
         else:
             _, status = os.waitpid(child_pid, 0)
             self.assertEqual(os.WEXITSTATUS(status), 0)
-
-    def test_activate_interactive_console_logging_nullhandler(self):
-        activate_interactive_console_logging(log_level=logging.INFO)
-
-        logger = logging.getLogger()
-        nh = [h for h in logger.handlers if isinstance(h, NullHandler)]
-        sh = [h for h in logger.handlers if getattr(h, 'stream', None) in (sys.stdout, sys.stderr)]
-        self.assertTrue(nh)
-        self.assertFalse(sh)
+        return
 
 
 if __name__ == '__main__':

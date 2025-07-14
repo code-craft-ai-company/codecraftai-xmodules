@@ -61,13 +61,13 @@ def logging_create_branch_logger(logger_name: str, logfilename: str, log_level: 
     return
 
 
-def reinitialize_logging_as_interactive(file_level: Union[int, str], location: LoggingLocation, log_branches: List[Dict[str, str]] = []) -> str:
+def reinitialize_logging_as_interactive(location: LoggingLocation, file_level: Union[int, str], log_branches: List[Dict[str, str]] = []) -> str:
     """
         Helper method to re-initialize the logging when the path to the output directory changes shortly after startup of the framework.  This method also handles the configuration of
         output levels, stdout and stderr file wrappers.
 
-        :param file_level: The log level to set the file logging to (default: DEBUG)
         :param location: Location of where to write log information.
+        :param file_level: The log level to set the file logging to (default: DEBUG)
         :param log_branches: Optional branch log specifictions for splitting specific loggers to their own logs. The spec form is {'name': '' 'logname': '', 'loglevel': ''}
     """
 
@@ -105,10 +105,10 @@ def reinitialize_logging_as_interactive(file_level: Union[int, str], location: L
 
 
     # Setup the complete logfile
-    base_handler = LoggingDefaults.DefaultFileLoggingHandler(logfile_complete)
-    base_handler.setFormatter(logging.Formatter(LoggingDefaults.DefaultLogfileFormat))
-    base_handler.setLevel(file_level)
-    root_logger.addHandler(file_level)
+    file_handler = LoggingDefaults.DefaultFileLoggingHandler(logfile_complete)
+    file_handler.setFormatter(logging.Formatter(LoggingDefaults.DefaultLogfileFormat))
+    file_handler.setLevel(file_level)
+    root_logger.addHandler(file_handler)
 
     # "DO NOT" setup stream handlers to send logging records to stdout and stderr, we are setting up
     # logging for an interactive terminal sending logging output to the terminal could be bad for the
@@ -137,15 +137,15 @@ def reinitialize_logging_as_interactive(file_level: Union[int, str], location: L
     return logfile_complete
 
 
-def reinitialize_logging_to_standard_file(console_level: Union[int, str], logfile_level: Union[int, str], location: LoggingLocation,
+def reinitialize_logging_to_standard_file(location: LoggingLocation, console_level: Union[int, str], file_level: Union[int, str],
                                           reduction: Optional[LoggingReduction] = None, log_branches: List[Dict[str, str]] = []) -> str:
     """
         Helper method to re-initialize the logging when the path to the output directory changes shortly after startup of the framework.  This method also handles the configuration of
         output levels, stdout and stderr file wrappers.
 
+        :param location: Location of where to write log information.
         :param console_level: The log level to set for the console output to (default: ERROR).
         :param file_level: The log level to set the file logging to (default: DEBUG)
-        :param location: Location of where to write log information.
         :param reduction: Optional reduction parameters for creating a reduction log.
         :param log_branches: Optional branch log specifictions for splitting specific loggers to their own logs. The spec form is {'name': '' 'logname': '', 'loglevel': ''}
     """
@@ -187,21 +187,21 @@ def reinitialize_logging_to_standard_file(console_level: Union[int, str], logfil
 
     # Set the logging level of the root logger to the logfile level, this means that all the
     # loggers will be clamped to the logging level of the root logger.
-    root_logger.setLevel(logfile_level)
+    root_logger.setLevel(file_level)
 
 
     # Setup the complete logfile
-    base_handler = LoggingDefaults.DefaultFileLoggingHandler(logfile_complete)
-    base_handler.setFormatter(logging.Formatter(LoggingDefaults.DefaultLogfileFormat))
-    base_handler.setLevel(logfile_level)
-    root_logger.addHandler(logfile_level)
+    file_handler = LoggingDefaults.DefaultFileLoggingHandler(logfile_complete)
+    file_handler.setFormatter(logging.Formatter(LoggingDefaults.DefaultLogfileFormat))
+    file_handler.setLevel(file_level)
+    root_logger.addHandler(file_handler)
 
 
     # Setup the reduction log file if reduction is being used.
     if logfile_reduced is not None:
         redux_handler = LoggingDefaults.DefaultFileLoggingHandler(logfile_reduced)
         redux_handler.setFormatter(logging.Formatter(LoggingDefaults.DefaultLogfileFormat))
-        redux_handler.setLevel(logfile_level)
+        redux_handler.setLevel(file_level)
         root_logger.addHandler(redux_handler)
 
 
@@ -243,15 +243,15 @@ def reinitialize_logging_to_standard_file(console_level: Union[int, str], logfil
     return logfile_complete, logfile_reduced
 
 
-def reinitialize_logging_as_service(console_level: Union[int, str], logfile_level: Union[int, str], location: LoggingLocation,
+def reinitialize_logging_as_service(location: LoggingLocation, console_level: Union[int, str], file_level: Union[int, str],
                                     max_bytes: int, backup_count: int, log_branches: List[Dict[str, str]] = []) -> str:
     """
         Helper method to re-initialize the logging when the path to the output directory changes shortly after startup of the framework.  This method also handles the configuration of
         output levels, stdout and stderr file wrappers.
 
+        :param location: Location of where to write log information.
         :param console_level: The log level to set for the console output to (default: ERROR).
         :param file_level: The log level to set the file logging to (default: DEBUG)
-        :param location: Location of where to write log information.
         :param max_bytes: Maximum size in bytes of the log file before rotation occurs.
         :param backup_count: Number of rotated log files to keep.
         :param log_branches: Optional branch log specifictions for splitting specific loggers to their own logs. The spec form is {'name': '' 'logname': '', 'loglevel': ''}
@@ -288,14 +288,14 @@ def reinitialize_logging_as_service(console_level: Union[int, str], logfile_leve
 
     # Set the logging level of the root logger to the logfile level, this means that all the
     # loggers will be clamped to the logging level of the root logger.
-    root_logger.setLevel(logfile_level)
+    root_logger.setLevel(file_level)
 
 
     # Setup the complete logfile
-    base_handler = LoggingDefaults.DefaultRotationalLoggingHandler(logfile_complete, maxBytes=max_bytes, backupCount=backup_count)
-    base_handler.setFormatter(logging.Formatter(LoggingDefaults.DefaultLogfileFormat))
-    base_handler.setLevel(logfile_level)
-    root_logger.addHandler(logfile_level)
+    rotate_handler = LoggingDefaults.DefaultRotationalLoggingHandler(logfile_complete, maxBytes=max_bytes, backupCount=backup_count)
+    rotate_handler.setFormatter(logging.Formatter(LoggingDefaults.DefaultLogfileFormat))
+    rotate_handler.setLevel(file_level)
+    root_logger.addHandler(rotate_handler)
 
 
     # Setup the stdout logger with the correct console level and

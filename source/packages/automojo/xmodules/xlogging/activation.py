@@ -47,15 +47,15 @@ class ActivationInfo:
 ACTIVATED_INFO: ActivationInfo = None
 
 
-def activate_service_logging(console_level:Union[str, int] = logging.ERROR, file_level: Union[str, int]=logging.DEBUG,
-                             location: LoggingLocation=None, max_bytes: int = 10 * 1024 * 1024,
-                             backup_count: int = 10, log_branches: List[Dict[str, str]] = [], remote_id: Optional[str] = None):
+def activate_service_logging(location: LoggingLocation, console_level:Union[str, int] = logging.ERROR, file_level: Union[str, int]=logging.DEBUG,
+                             max_bytes: int = 10 * 1024 * 1024, backup_count: int = 10, log_branches: List[Dict[str, str]] = [],
+                             remote_id: Optional[str] = None):
     """
         Activates logging for a services.  This means the logging will be to a rotational log.
 
+        :param location: Optional. Location of where to write log information.
         :param console_level: The log level to set for the console output to (default: ERROR).
         :param file_level: The log level to set the file logging to (default: DEBUG)
-        :param location: Optional. Location of where to write log information.
         :param max_bytes: Maximum size in bytes of the log file before rotation occurs.
         :param backup_count: Number of rotated log files to keep.
         :param log_branches: Optional branch log specifictions for splitting specific loggers to their own logs. The spec form is {'name': '' 'logname': '', 'loglevel': ''}
@@ -85,19 +85,19 @@ def activate_service_logging(console_level:Union[str, int] = logging.ERROR, file
     else:
         ACTIVATED_INFO = ActivationInfo(current_pid, ACTIVATION_MODE.SERVICE)
 
-    reinitialize_logging_as_service(console_level, file_level, location, max_bytes, backup_count, log_branches=log_branches)
+    reinitialize_logging_as_service(location, console_level, file_level, max_bytes, backup_count, log_branches=log_branches)
 
     return
 
 
-def activate_interactive_console_logging(file_level: Union[str, int]=logging.INFO, location: LoggingLocation=None, log_branches: List[Dict[str, str]] = [],
+def activate_interactive_console_logging(location: LoggingLocation, file_level: Union[str, int]=logging.INFO, log_branches: List[Dict[str, str]] = [],
                                          remote_id: Optional[str] = None):
     """
         Activates logging but excludes log entries from being written to 'sys.stdout' and 'sys.stderr'.  This enables
         an interactive console experience without logging interrupting user input/output.
     
-        :param file_level: The log level to set for the logger (default: INFO).
         :param location: Optional. Location of where to write log information.
+        :param file_level: The log level to set for the logger (default: INFO).
         :param log_branches: Optional branch log specifictions for splitting specific loggers to their own logs. The spec form is {'name': '' 'logname': '', 'loglevel': ''}
         :param remote_id: Optional identifier that can be passed when a remote process or remote host and process are logging outside the main context.
         
@@ -124,22 +124,21 @@ def activate_interactive_console_logging(file_level: Union[str, int]=logging.INF
 
     else:
         ACTIVATED_INFO = ActivationInfo(current_pid, ACTIVATION_MODE.INTERACTIVE)
-    
 
-    reinitialize_logging_as_interactive(file_level, location, log_branches=log_branches)
+    reinitialize_logging_as_interactive(location, file_level, log_branches=log_branches)
 
     return
 
 
-def activate_standard_file_logging(console_level: Union[str, int] = logging.ERROR, file_level: Union[str, int] = logging.DEBUG,
-                                 location: LoggingLocation = None, log_branches: List[Dict[str, str]] = [], remote_id: Optional[str] = None):
+def activate_standard_file_logging(location: LoggingLocation, console_level: Union[str, int] = logging.ERROR, file_level: Union[str, int] = logging.DEBUG,
+                                   log_branches: List[Dict[str, str]] = [], remote_id: Optional[str] = None):
     """
         Activates logging for commandline tools and commands where the user wants keep the log output to the console less verbose but still
         capture more detailed logs in a file.
     
+        :param location: Location of where to write log information.
         :param console_level: The log level to set for the console output to (default: ERROR).
         :param file_level: The log level to set the file logging to (default: DEBUG)
-        :param location: Location of where to write log information.
         :param log_branches: Optional branch log specifictions for splitting specific loggers to their own logs. The spec form is {'name': '' 'logname': '', 'loglevel': ''}
         :param remote_id: Optional identifier that can be passed when a remote process or remote host and process are logging outside the main context.
 
@@ -166,7 +165,7 @@ def activate_standard_file_logging(console_level: Union[str, int] = logging.ERRO
     else:
         ACTIVATED_INFO = ActivationInfo(current_pid, ACTIVATION_MODE.COMMANDLINE)
 
-    reinitialize_logging_to_standard_file(console_level, file_level, location, log_branches=log_branches)
+    reinitialize_logging_to_standard_file(location, console_level, file_level, log_branches=log_branches)
 
     return
 
