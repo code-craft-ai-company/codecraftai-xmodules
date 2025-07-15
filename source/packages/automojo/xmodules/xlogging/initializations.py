@@ -75,6 +75,9 @@ def reinitialize_logging_as_interactive(location: LoggingLocation, file_level: U
     use_enhanced_logger()
 
     output_directory = expand_path(location.directory)
+    if not os.path.exists(output_directory):
+        os.makedirs(output_directory)
+
     log_ext = location.ext
 
     logfile_complete = os.path.join(output_directory, f"{location.basename}{log_ext}")
@@ -154,6 +157,9 @@ def reinitialize_logging_to_standard_file(location: LoggingLocation, console_lev
     use_enhanced_logger()
 
     output_directory = expand_path(location.directory)
+    if not os.path.exists(output_directory):
+        os.makedirs(output_directory)
+
     log_ext = location.ext
 
     logfile_complete = None
@@ -261,6 +267,9 @@ def reinitialize_logging_as_service(location: LoggingLocation, console_level: Un
     use_enhanced_logger()
 
     output_directory = expand_path(location.directory)
+    if not os.path.exists(output_directory):
+        os.makedirs(output_directory)
+
     log_ext = location.ext
 
 
