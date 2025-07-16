@@ -89,14 +89,18 @@ def indent_lines(msg: Union[str, List[str]], level: int, indent: int=4) -> str:
 
         pfx = " " * (level * indent)
 
-        indented = StringIO()
+        content_buffer = StringIO()
         for nxtline in msglines:
-            indented.write(pfx)
-            indented.write(nxtline)
+            content_buffer.write(pfx)
+            content_buffer.write(nxtline)
+        
+        indented = content_buffer.getvalue()
     elif isinstance(msg, list) or isinstance(msg, tuple):
-        indented = indent_lines_list(msg, level, indent)
+        msglines = indent_lines_list(msg, level, indent)
 
-    return indented.getvalue()
+        indented = "".join(msglines)
+
+    return indented
 
 
 def indent_line(lcontent: str, level: int, indent: int, pre_strip_leading: bool=True) -> str:
