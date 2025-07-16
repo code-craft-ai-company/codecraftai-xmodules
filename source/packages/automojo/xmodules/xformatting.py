@@ -11,7 +11,7 @@ __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
 
-from typing import List, Optional
+from typing import List, Optional, Tuple, Union
 
 import os
 
@@ -69,9 +69,9 @@ def format_command_result(msg: str, command: str, status: int, stdout: str, stde
     return fmt_msg
 
 
-def indent_lines(msg: str, level: int, indent: int=4) -> str:
+def indent_lines(msg: Union[str, List[str]], level: int, indent: int=4) -> str:
     """
-        Takes a string and splits it into multiple lines, then indents each line
+        Takes a string or list of strings and splits them into multiple lines, then indents each line
         to the specified level using 'indent' spaces for each level.
 
         :param msg: The text content to split into lines and then indent.
@@ -80,15 +80,21 @@ def indent_lines(msg: str, level: int, indent: int=4) -> str:
 
         :returns: The indenting content
     """
-    # Split msg into lines keeping the line endings
-    msglines = msg.splitlines(True)
 
-    pfx = " " * (level * indent)
+    indented = None
 
-    indented = StringIO()
-    for nxtline in msglines:
-        indented.write(pfx)
-        indented.write(nxtline)
+    if isinstance(msg, str):
+        # Split msg into lines keeping the line endings
+        msglines = msg.splitlines(True)
+
+        pfx = " " * (level * indent)
+
+        indented = StringIO()
+        for nxtline in msglines:
+            indented.write(pfx)
+            indented.write(nxtline)
+    elif isinstance(msg, list) or isinstance(msg, tuple):
+        indented = indent_lines_list(msg, level, indent)
 
     return indented.getvalue()
 
@@ -116,7 +122,7 @@ def indent_line(lcontent: str, level: int, indent: int, pre_strip_leading: bool=
     return indented
 
 
-def indent_lines_list(msglines: List[str], level: int, indent: int=4) -> List[str]:
+def indent_lines_list(msglines: Union[List[str], Tuple[str]], level: int, indent: int=4) -> List[str]:
     """
         Takes a list of str that has already been split on new-lines and indents each line
         to the specified level using 'indent' spaces for each level.
@@ -127,12 +133,20 @@ def indent_lines_list(msglines: List[str], level: int, indent: int=4) -> List[st
 
         :returns: The indenting lines
     """
+
+    if isinstance(msglines, str):
+        raise ValueError("The function 'indent_lines_list' takes a list or tuple, not a str.")
+
     outlines = [] 
 
     pfx = " " * (level * indent)
 
     for nxtline in msglines:
-        outlines.append(f"{pfx}{nxtline}")
+        if nxtline.find("\n") > -1:
+            sub_lines = indent_lines(nxtline, level, indent)
+            outlines.extend(sub_lines)
+        else:
+            outlines.append(f"{pfx}{nxtline}")
 
     return outlines
 
