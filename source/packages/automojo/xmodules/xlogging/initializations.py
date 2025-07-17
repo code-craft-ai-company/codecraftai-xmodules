@@ -18,8 +18,6 @@ from automojo.xmodules.fspath import expand_path
 
 from automojo.xmodules.xlogging.parameters import LoggingLocation, LoggingReduction
 from automojo.xmodules.xlogging.enhancedloggers import (
-    use_enhanced_logger,
-    EnhancedRootLogger,
     EnhancedLogger,
     SWAPPABLE_HOOKS
 )
@@ -71,9 +69,6 @@ def reinitialize_logging_as_interactive(location: LoggingLocation, file_level: U
         :param log_branches: Optional branch log specifictions for splitting specific loggers to their own logs. The spec form is {'name': '' 'logname': '', 'loglevel': ''}
     """
 
-    # Make sure we switch over to the enhanced logger
-    use_enhanced_logger()
-
     output_directory = expand_path(location.directory)
     if not os.path.exists(output_directory):
         os.makedirs(output_directory)
@@ -86,21 +81,11 @@ def reinitialize_logging_as_interactive(location: LoggingLocation, file_level: U
     # Swap out the root logger because it is set by default and if we do not swap it out, no matter
     # what we do to set the logger class the root logger will always be the normal 'Logger' derived
     # 'RootLogger'.
-    other_root_logger: logging.RootLogger = logging.Logger.root
+    root_logger: logging.RootLogger = logging.Logger.root
 
-    root_handlers = [h for h in other_root_logger.handlers]
+    root_handlers = [h for h in root_logger.handlers]
     for handler in root_handlers:
-        other_root_logger.removeHandler(handler)
-
-
-    # Our new root logger should be unconfigured so it won't have any handlers yet.
-    root_logger = EnhancedRootLogger(logging.NOTSET)
-    root_logger.adopt_children(other_root_logger)
-
-    logging.root = root_logger
-    logging.Logger.root = root_logger
-    logging.Logger.manager.root = root_logger
-
+        root_logger.removeHandler(handler)
 
     # Set the logging level of the root logger to the logfile level, this means that all the
     # loggers will be clamped to the logging level of the root logger.
@@ -153,9 +138,6 @@ def reinitialize_logging_to_standard_file(location: LoggingLocation, console_lev
         :param log_branches: Optional branch log specifictions for splitting specific loggers to their own logs. The spec form is {'name': '' 'logname': '', 'loglevel': ''}
     """
 
-    # Make sure we switch over to the enhanced logger
-    use_enhanced_logger()
-
     output_directory = expand_path(location.directory)
     if not os.path.exists(output_directory):
         os.makedirs(output_directory)
@@ -175,20 +157,11 @@ def reinitialize_logging_to_standard_file(location: LoggingLocation, console_lev
     # Swap out the root logger because it is set by default and if we do not swap it out, no matter
     # what we do to set the logger class the root logger will always be the normal 'Logger' derived
     # 'RootLogger'.
-    other_root_logger: logging.RootLogger = logging.Logger.root
+    root_logger: logging.RootLogger = logging.Logger.root
 
-    root_handlers = [h for h in other_root_logger.handlers]
+    root_handlers = [h for h in root_logger.handlers]
     for handler in root_handlers:
-        other_root_logger.removeHandler(handler)
-
-
-    # Our new root logger should be unconfigured so it won't have any handlers yet.
-    root_logger = EnhancedRootLogger(logging.NOTSET)
-    root_logger.adopt_children(other_root_logger)
-
-    logging.root = root_logger
-    logging.Logger.root = root_logger
-    logging.Logger.manager.root = root_logger
+        root_logger.removeHandler(handler)
 
 
     # Set the logging level of the root logger to the logfile level, this means that all the
@@ -263,9 +236,6 @@ def reinitialize_logging_as_service(location: LoggingLocation, console_level: Un
         :param log_branches: Optional branch log specifictions for splitting specific loggers to their own logs. The spec form is {'name': '' 'logname': '', 'loglevel': ''}
     """
 
-    # Make sure we switch over to the enhanced logger
-    use_enhanced_logger()
-
     output_directory = expand_path(location.directory)
     if not os.path.exists(output_directory):
         os.makedirs(output_directory)
@@ -279,20 +249,11 @@ def reinitialize_logging_as_service(location: LoggingLocation, console_level: Un
     # Swap out the root logger because it is set by default and if we do not swap it out, no matter
     # what we do to set the logger class the root logger will always be the normal 'Logger' derived
     # 'RootLogger'.
-    other_root_logger: logging.RootLogger = logging.Logger.root
+    root_logger: logging.RootLogger = logging.Logger.root
 
-    root_handlers = [h for h in other_root_logger.handlers]
+    root_handlers = [h for h in root_logger.handlers]
     for handler in root_handlers:
-        other_root_logger.removeHandler(handler)
-
-
-    # Our new root logger should be unconfigured so it won't have any handlers yet.
-    root_logger = EnhancedRootLogger(logging.NOTSET)
-    root_logger.adopt_children(other_root_logger)
-
-    logging.root = root_logger
-    logging.Logger.root = root_logger
-    logging.Logger.manager.root = root_logger
+        root_logger.removeHandler(handler)
 
 
     # Set the logging level of the root logger to the logfile level, this means that all the
@@ -339,7 +300,6 @@ def reinitialize_logging_as_service(location: LoggingLocation, console_level: Un
     # and use it to log that the logging as been initialized.
     logger: EnhancedLogger = logging.getLogger()
 
-    if isinstance(logger, EnhancedLogger):
-        logger.section("Logging Initialized")
+    logger.section("Logging Initialized")
 
     return logfile_complete
