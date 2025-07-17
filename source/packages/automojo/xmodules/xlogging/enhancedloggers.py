@@ -3,10 +3,11 @@ __author__ = "Myron Walker"
 __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
+from typing import Optional
+
 
 import logging
 import os
-import sys
 import warnings
 
 
@@ -303,7 +304,7 @@ class EnhancedLogger:
         return rv
 
 
-def getEnhancedLogger(name: str) -> EnhancedLogger:
+def getEnhancedLogger(name: Optional[str] = None) -> EnhancedLogger:
     logger = logging.getLogger(name)
     rtnval = EnhancedLogger(logger)
     return rtnval
