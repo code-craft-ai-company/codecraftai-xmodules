@@ -11,17 +11,11 @@ import warnings
 
 
 from automojo.xmodules.xlogging.levels import LogLevel
+from automojo.xmodules.xlogging.swappablehooks import SWAPPABLE_HOOKS
 
 
 LOGGING_SECTION_MARKER = "="
 LOGGING_SECTION_MARKER_LENGTH = 80
-
-
-class SWAPPABLE_HOOKS:
-    # We capture references to sys.stdout and sys.stderr here so we can
-    # swap out the file descriptor used by logging for testing purposes
-    HOOK_SYS_STDOUT = None
-    HOOK_SYS_STDERR = None
 
 
 def format_log_section_header(title: str):
@@ -35,25 +29,6 @@ def format_log_section_header(title: str):
     marker_suffix = LOGGING_SECTION_MARKER * (marker_count - marker_half)
     header = "\n%s%s%s\n" % (marker_prefix, title_upper, marker_suffix)
     return header
-
-
-def use_enhanced_logger():
-    """
-        Swap out the default logger for the 'logging' module so we can add additional enhanced logging methods and behaviors.
-        
-        ..note: Calling this method in order to swap out the default logger class ensures that we capture references to the stdout
-        and stdin files if we want.  This also allows us to swap out the stdin and stdout references the logger uses which allows
-        us to capture the output that would have been written to stdout and standard in for debugging.
-    """
-
-    # Capture stdout and stderr so the enhanced logger can force a write to the std output when
-    # a call to the 'render' method is made
-    SWAPPABLE_HOOKS.HOOK_SYS_STDOUT = sys.stdout
-    SWAPPABLE_HOOKS.HOOK_SYS_STDERR = sys.stderr
-
-    logging.setLoggerClass(EnhancedLogger)
-
-    return
 
 
 class EnhancedLogger:
@@ -328,28 +303,8 @@ class EnhancedLogger:
         return rv
 
 
-class EnhancedRootLogger(EnhancedLogger):
-    """
-    A root logger is not that different to any other logger, except that
-    it must have a logging level and there is only one instance of it in
-    the hierarchy.
-    """
-    def __init__(self, level):
-        """
-        Initialize the logger with the name "root".
-        """
-        EnhancedLogger.__init__(self, "root", level)
-
-    def __reduce__(self):
-        return logging.getLogger, ()
-    
-    def adopt_children(self, other_root: logging.RootLogger):
-
-        # Tell all of the root loggers children that we are the new parent
-        children_of_root = [c for c in other_root.manager.loggerDict.values()]
-        for child in children_of_root:
-            if hasattr(child, "parent") and child.parent is other_root:
-                child.parent = self
-
-        return
+def getEnhancedLogger(name: str) -> EnhancedLogger:
+    logger = logging.getLogger(name)
+    rtnval = EnhancedLogger(logger)
+    return rtnval
 

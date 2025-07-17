@@ -10,18 +10,16 @@ from typing import Dict, List, Optional, Type, Union
 import logging
 import logging.handlers
 import os
+import sys
 import traceback
 
 
 from automojo.xmodules.fspath import expand_path
 
-
 from automojo.xmodules.xlogging.parameters import LoggingLocation, LoggingReduction
-from automojo.xmodules.xlogging.enhancedloggers import (
-    EnhancedLogger,
-    SWAPPABLE_HOOKS
-)
+from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
 from automojo.xmodules.xlogging.recordfilters import GreaterOrEqualRecordFilter, LessThanRecordFilter
+from automojo.xmodules.xlogging.swappablehooks import SWAPPABLE_HOOKS
 
 class LoggingDefaults:
     """
@@ -117,10 +115,8 @@ def reinitialize_logging_as_interactive(location: LoggingLocation, file_level: U
 
     # Verify our configuration by calling 'logging.getLogger()' got get the default logger
     # and use it to log that the logging as been initialized.
-    logger: EnhancedLogger = logging.getLogger()
-
-    if isinstance(logger, EnhancedLogger):
-        logger.section("Logging Initialized")
+    elogger = getEnhancedLogger()
+    elogger.section("Logging Initialized")
 
     return logfile_complete
 
@@ -137,6 +133,12 @@ def reinitialize_logging_to_standard_file(location: LoggingLocation, console_lev
         :param reduction: Optional reduction parameters for creating a reduction log.
         :param log_branches: Optional branch log specifictions for splitting specific loggers to their own logs. The spec form is {'name': '' 'logname': '', 'loglevel': ''}
     """
+
+    if SWAPPABLE_HOOKS.HOOK_SYS_STDOUT is None:
+         SWAPPABLE_HOOKS.HOOK_SYS_STDOUT = sys.stdout
+
+    if SWAPPABLE_HOOKS.HOOK_SYS_STDERR is None:
+         SWAPPABLE_HOOKS.HOOK_SYS_STDERR = sys.stderr
 
     output_directory = expand_path(location.directory)
     if not os.path.exists(output_directory):
@@ -214,10 +216,8 @@ def reinitialize_logging_to_standard_file(location: LoggingLocation, console_lev
 
     # Verify our configuration by calling 'logging.getLogger()' got get the default logger
     # and use it to log that the logging as been initialized.
-    logger: EnhancedLogger = logging.getLogger()
-
-    if isinstance(logger, EnhancedLogger):
-        logger.section("Logging Initialized")
+    elogger = getEnhancedLogger()
+    elogger.section("Logging Initialized")
 
     return logfile_complete, logfile_reduced
 
@@ -235,6 +235,12 @@ def reinitialize_logging_as_service(location: LoggingLocation, console_level: Un
         :param backup_count: Number of rotated log files to keep.
         :param log_branches: Optional branch log specifictions for splitting specific loggers to their own logs. The spec form is {'name': '' 'logname': '', 'loglevel': ''}
     """
+
+    if SWAPPABLE_HOOKS.HOOK_SYS_STDOUT is None:
+         SWAPPABLE_HOOKS.HOOK_SYS_STDOUT = sys.stdout
+
+    if SWAPPABLE_HOOKS.HOOK_SYS_STDERR is None:
+         SWAPPABLE_HOOKS.HOOK_SYS_STDERR = sys.stderr
 
     output_directory = expand_path(location.directory)
     if not os.path.exists(output_directory):
@@ -298,8 +304,7 @@ def reinitialize_logging_as_service(location: LoggingLocation, console_level: Un
 
     # Verify our configuration by calling 'logging.getLogger()' got get the default logger
     # and use it to log that the logging as been initialized.
-    logger: EnhancedLogger = logging.getLogger()
-
-    logger.section("Logging Initialized")
+    elogger = getEnhancedLogger()
+    elogger.section("Logging Initialized")
 
     return logfile_complete

@@ -3,6 +3,7 @@ from typing import Union
 
 import logging
 
+
 def loglevel_as_int(level: Union[str, int]) -> int:
     """Guarnatees that a logging level is a numerical level."""
 
