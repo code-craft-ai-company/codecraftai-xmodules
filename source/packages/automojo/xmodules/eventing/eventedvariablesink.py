@@ -21,13 +21,15 @@ import weakref
 
 from datetime import datetime
 
-from automojo.errors.exceptions import AbstractMethodError
 
+from automojo.errors.exceptions import AbstractMethodError
 from automojo.xmodules.eventing.eventedvariable import EventedVariable
+
 
 class EventedVariableSink:
     """
-        The :class:`EventedVariableSink` provides a mechanism for managing 
+        The :class:`EventedVariableSink` provides a mechanism derived proxy classes can use to manage
+        a collection of variables that are yielded via an eventing mechanism from a remote object.
     """
 
     SINK_VARIABLE_TYPE = EventedVariable
