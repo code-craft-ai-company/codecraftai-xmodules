@@ -14,7 +14,7 @@ __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
 
-from typing import Any, Dict, Optional, Tuple, Union
+from typing import Any, Dict, Generator, Optional, Tuple, Union
 
 import threading
 import weakref
@@ -200,7 +200,7 @@ class EventedVariableSink:
         errmsg = "The `trigger_auto_subscribe_from_variable` method was not overloaded for type={}".format(type(self).__name__)
         raise AbstractMethodError(errmsg)
 
-    def yield_state_lock(self) -> threading.RLock:
+    def yield_state_lock(self) -> Generator[threading.RLock, None, None]:
         """
             Yields the state lock in a way that it can be automatically released at the end of an
             iteration scope.
