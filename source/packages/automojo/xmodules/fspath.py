@@ -11,10 +11,10 @@ __author__ = "Myron Walker"
 __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
+from types import ModuleType
+from typing import List, Optional, Set, Union
 
-
-from typing import List, Optional
-
+import importlib
 import os
 
 TRANSLATE_TABLE_NORMALIZE_FOR_PATH = str.maketrans({
@@ -119,6 +119,57 @@ def get_directory_for_code_container(container: str) -> str:
         raise RuntimeError("Unable to get parent dir for module") from None
 
     return container_dir
+
+def get_module_path(module: Union[str, ModuleType]) -> str:
+    """
+        Returns the absolute filesystem path to a module.
+
+        :param module: Module object or dotted import string reference to the module.
+
+        :returns: Absolute path to the module file.
+
+        :raises ValueError: If the provided reference resolves to a package.
+    """
+    module_obj = module
+    if isinstance(module, str):
+        module_obj = importlib.import_module(module)
+
+    if hasattr(module_obj, "__path__"):
+        raise ValueError(f"{module!r} resolves to a package; only modules are supported.") from None
+
+    module_path = getattr(module_obj, "__file__", None)
+    if module_path is None:
+        raise RuntimeError(f"Unable to determine module path for {module!r}") from None
+
+    return os.path.abspath(module_path)
+
+def get_package_paths(package: Union[str, ModuleType]) -> List[str]:
+    """
+        Returns the filesystem paths associated with a package (including namespace packages).
+
+        :param package: Package object or dotted import string reference to the package.
+
+        :returns: List of absolute directory paths that contribute to the package.
+
+        :raises ValueError: If the provided reference does not resolve to a package.
+    """
+    package_obj = package
+    if isinstance(package, str):
+        package_obj = importlib.import_module(package)
+
+    package_paths = getattr(package_obj, "__path__", None)
+    if package_paths is None:
+        raise ValueError(f"{package!r} does not resolve to a package.") from None
+
+    resolved_paths: List[str] = []
+    seen: Set[str] = set()
+    for pkg_path in package_paths:
+        abs_path = os.path.abspath(pkg_path)
+        if abs_path not in seen:
+            resolved_paths.append(abs_path)
+            seen.add(abs_path)
+
+    return resolved_paths
 
 def get_expanded_path(path: str) -> str:
     """
