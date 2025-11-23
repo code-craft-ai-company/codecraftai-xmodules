@@ -99,6 +99,8 @@ class VariableDesc:
         self._default = default
         self._context_path = context_path
         self._overrides = overrides
+
+        self._key = f"{self._section}->{self._name}"
         return
     
     @property
@@ -135,6 +137,13 @@ class VariableDesc:
             The configuration file section to look for this variable in.
         """
         return self._section
+
+    @property
+    def key(self) -> str:
+        """
+            The key to use when storing and retrieving the variable description.
+        """
+        return self._key
 
     def __repr__(self):
         rval = f"AppVar(name='{self._name}', section='{self._section}')"
