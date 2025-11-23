@@ -13,7 +13,7 @@ __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
 
-from typing import Any, Protocol, Union
+from typing import Any, Optional, Protocol, Union
 
 import re
 
@@ -93,13 +93,21 @@ class VariableDesc:
         Describes an application variable that is loaded from the settings file or from the environment variables
     """
 
-    def __init__(self, *, name: str, section: str='DEFAULT', default: str=None, overrides: bool=True):
+    def __init__(self, *, name: str, section: str='DEFAULT', default: str=None, overrides: bool=True, context_path: Optional[str]=None):
         self._name = assert_variable_name(name)
         self._section = assert_section_name(section)
         self._default = default
+        self._context_path = context_path
         self._overrides = overrides
         return
     
+    @property
+    def context_path(self) -> Union[str, None]:
+        """
+            The path that should be used to store this variable in the context.
+        """
+        return self._context_path
+
     @property
     def default(self) -> Union[str, None]:
         """
