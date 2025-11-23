@@ -13,7 +13,7 @@ __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
 
-from typing import Any, Optional, Protocol, Union
+from typing import Any, List, Optional, Protocol, Union
 
 import re
 
@@ -142,3 +142,30 @@ class VariableDesc:
 
     def __str__(self):
         return self._name
+
+
+class VariableSet:
+    """
+        Class that serves as a base class for variable declaration classes. 
+    """
+
+    @classmethod
+    def items(cls) -> List[VariableDesc]:
+        """
+            Returns the list of 'VariableDesc' class members defined on this class and any base classes.
+            The variables are returned in definition order, with values on derived classes overriding
+            values from base classes that share the same attribute name.
+        """
+        variables_by_name = {}
+
+        for base_cls in reversed(cls.mro()):
+            if base_cls is object:
+                continue
+
+            for attr_name, attr_value in base_cls.__dict__.items():
+                if isinstance(attr_value, VariableDesc):
+                    variables_by_name[attr_name] = attr_value
+
+        rval: List[VariableDesc] = list(variables_by_name.values())
+
+        return rval
