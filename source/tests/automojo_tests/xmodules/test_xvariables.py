@@ -57,11 +57,11 @@ class TestVariableReader(unittest.TestCase):
         call_record = {}
 
         class SampleReader(VariableReader):
-            def perform_read(self, var_desc, instance, owner):
-                call_record["var_desc"] = var_desc
+            def perform_read(self, instance, owner):
+                call_record["var_desc"] = self._var_desc
                 call_record["instance"] = instance
                 call_record["owner"] = owner
-                return f"value-for-{var_desc.name}"
+                return f"value-for-{self._var_desc.name}"
 
         var_desc = VariableDesc(name="CUSTOM", section="DEFAULT")
 
@@ -78,7 +78,7 @@ class TestVariableReader(unittest.TestCase):
 
     def test_variable_reader_applies_converter(self):
         class SampleReader(VariableReader):
-            def perform_read(self, var_desc, instance, owner):
+            def perform_read(self, instance, owner):
                 return "7"
 
         var_desc = VariableDesc(name="CONVERT_ME", section="DEFAULT")
@@ -91,7 +91,7 @@ class TestVariableReader(unittest.TestCase):
 
     def test_variable_reader_uses_default_when_reader_returns_none(self):
         class SampleReader(VariableReader):
-            def perform_read(self, var_desc, instance, owner):
+            def perform_read(self, instance, owner):
                 return None
 
         var_desc = VariableDesc(name="HAS_DEFAULT", section="DEFAULT", default="3")
@@ -104,7 +104,7 @@ class TestVariableReader(unittest.TestCase):
 
     def test_variable_reader_requires_matching_attribute_name(self):
         class SampleReader(VariableReader):
-            def perform_read(self, var_desc, instance, owner):
+            def perform_read(self, instance, owner):
                 return "irrelevant"
 
         var_desc = VariableDesc(name="EXPECTED", section="DEFAULT")

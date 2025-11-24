@@ -13,7 +13,7 @@ __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
 
-from typing import Any, Callable, List, Optional, Protocol, Union
+from typing import Any, Callable, Dict, List, Optional, Protocol, Union
 
 import re
 
@@ -158,7 +158,7 @@ class VariableReader:
         Class that establishes a way to declaratively read variables from the application variable storage.
     """
 
-    def __init__(self, var_desc: VariableDesc, *, converter: Optional[ValueConverter] = None):
+    def __init__(self, var_desc: VariableDesc, *, converter: Optional[ValueConverter] = None, conv_kwargs: Dict[str, Any]=None):
         """
             Initializes a variable reader descriptor that operates on a :class:`VariableDesc`.
 
@@ -171,6 +171,8 @@ class VariableReader:
 
         self._var_desc = var_desc
         self._converter = converter
+        self._conv_kwargs = conv_kwargs
+
         self._owner: Optional[type] = None
         return
 
@@ -179,21 +181,24 @@ class VariableReader:
             Captures the class and attribute name this reader is bound to.
         """
         self._owner = owner
+
         assert_variable_name(name)
+        
         if self._var_desc.name != name:
             errmsg = (
                 f"VariableDesc name '{self._var_desc.name}' does not match attribute name '{name}'."
             )
             raise AssertionError(errmsg)
+        
         return
 
-    def __call__(self, instance: Optional[object] = None, owner: Optional[type] = None) -> Any:
+    def __call__(self, instance: Optional[object], owner: Optional[type]) -> Any:
         """
             Resolves the value for this variable by delegating to :meth:`perform_read`.
         """
         target_owner = owner if owner is not None else self._owner
 
-        resolved_value = self.perform_read(self._var_desc, instance, target_owner)
+        resolved_value = self.perform_read(instance, target_owner)
         if resolved_value is None and self._var_desc.default is not None:
             resolved_value = self._var_desc.default
 
@@ -208,7 +213,7 @@ class VariableReader:
         """
         return self(instance, owner)
 
-    def perform_read(self, var_desc: VariableDesc, instance: Optional[object], owner: Optional[type]) -> Any:
+    def perform_read(self, instance: object, owner: type, ) -> Any:
         """
             Overloadable hook used by derived classes to fetch the value for the given variable.
         """
