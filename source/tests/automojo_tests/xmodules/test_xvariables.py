@@ -4,6 +4,7 @@ from automojo.xmodules.xvariables import (
     assert_section_name,
     assert_variable_name,
     VariableDesc,
+    VariableSource,
     VariableReader
 )
 
@@ -50,6 +51,28 @@ class TestXVariables(unittest.TestCase):
         self.assertEqual(var_desc.section, "DEFAULT")
         return
 
+    def test_variable_desc_preserves_metadata(self):
+        def to_upper(value):
+            return value.upper()
+
+        var_desc = VariableDesc(
+            name="FEATURE_FLAG",
+            section="FEATURES",
+            default="false",
+            overrides=False,
+            context_path="features.flag",
+            source=VariableSource.ENVIRONMENT,
+            converter=to_upper
+        )
+
+        self.assertEqual(var_desc.key, "FEATURES->FEATURE_FLAG")
+        self.assertEqual(var_desc.default, "false")
+        self.assertFalse(var_desc.overrides)
+        self.assertEqual(var_desc.context_path, "features.flag")
+        self.assertIs(var_desc.converter, to_upper)
+        self.assertEqual(var_desc.source, VariableSource.ENVIRONMENT)
+        return
+
 
 class TestVariableReader(unittest.TestCase):
 
@@ -76,30 +99,32 @@ class TestVariableReader(unittest.TestCase):
         self.assertIs(call_record["owner"], SampleVariables)
         return
 
-    def test_variable_reader_applies_converter(self):
+    def test_variable_reader_passes_instance_when_bound(self):
+        call_record = {}
+
         class SampleReader(VariableReader):
             def perform_read(self, instance, owner):
-                return "7"
+                call_record["instance"] = instance
+                call_record["owner"] = owner
+                return "instance-value"
 
-        var_desc = VariableDesc(name="CONVERT_ME", section="DEFAULT")
+        var_desc = VariableDesc(name="BOUND", section="DEFAULT")
 
         class SampleVariables:
-            CONVERT_ME = SampleReader(var_desc, converter=int)
+            BOUND = SampleReader(var_desc)
 
-        self.assertEqual(SampleVariables.CONVERT_ME, 7)
+        sample = SampleVariables()
+
+        value = sample.BOUND
+
+        self.assertEqual(value, "instance-value")
+        self.assertIs(call_record["owner"], SampleVariables)
+        self.assertIs(call_record["instance"], sample)
         return
 
-    def test_variable_reader_uses_default_when_reader_returns_none(self):
-        class SampleReader(VariableReader):
-            def perform_read(self, instance, owner):
-                return None
-
-        var_desc = VariableDesc(name="HAS_DEFAULT", section="DEFAULT", default="3")
-
-        class SampleVariables:
-            HAS_DEFAULT = SampleReader(var_desc, converter=int)
-
-        self.assertEqual(SampleVariables.HAS_DEFAULT, 3)
+    def test_variable_reader_requires_variable_desc_instance(self):
+        with self.assertRaises(AssertionError):
+            VariableReader(var_desc="not-a-variable-desc")
         return
 
     def test_variable_reader_requires_matching_attribute_name(self):

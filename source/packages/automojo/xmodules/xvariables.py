@@ -101,13 +101,14 @@ class VariableDesc:
     """
 
     def __init__(self, *, name: str, section: str='DEFAULT', default: str=None, overrides: bool=True, context_path: Optional[str]=None,
-                 source: VariableSource=VariableSource.BOTH):
+                 source: VariableSource=VariableSource.BOTH, converter: Optional[ValueConverter]=None):
         self._name = assert_variable_name(name)
         self._section = assert_section_name(section)
         self._default = default
         self._overrides = overrides
         self._context_path = context_path
         self._source = source
+        self._converter = converter
     
         self._key = f"{self._section}->{self._name}"
         return
@@ -118,6 +119,10 @@ class VariableDesc:
             The path that should be used to store this variable in the context.
         """
         return self._context_path
+
+    @property
+    def converter(self) -> Union[ValueConverter, None]:
+        return self._converter
 
     @property
     def default(self) -> Union[str, None]:
@@ -174,7 +179,7 @@ class VariableReader:
         Class that establishes a way to declaratively read variables from the application variable storage.
     """
 
-    def __init__(self, var_desc: VariableDesc, *, converter: Optional[ValueConverter] = None, conv_kwargs: Dict[str, Any]=None):
+    def __init__(self, var_desc: VariableDesc):
         """
             Initializes a variable reader descriptor that operates on a :class:`VariableDesc`.
 
@@ -186,8 +191,6 @@ class VariableReader:
             raise AssertionError(errmsg)
 
         self._var_desc = var_desc
-        self._converter = converter
-        self._conv_kwargs = conv_kwargs
 
         self._owner: Optional[type] = None
         return
@@ -215,11 +218,6 @@ class VariableReader:
         target_owner = owner if owner is not None else self._owner
 
         resolved_value = self.perform_read(instance, target_owner)
-        if resolved_value is None and self._var_desc.default is not None:
-            resolved_value = self._var_desc.default
-
-        if self._converter is not None and isinstance(resolved_value, str):
-            resolved_value = self._converter(resolved_value)
 
         return resolved_value
 
@@ -229,7 +227,7 @@ class VariableReader:
         """
         return self(instance, owner)
 
-    def perform_read(self, instance: object, owner: type, ) -> Any:
+    def perform_read(self, instance: object, owner: type) -> Any:
         """
             Overloadable hook used by derived classes to fetch the value for the given variable.
         """
