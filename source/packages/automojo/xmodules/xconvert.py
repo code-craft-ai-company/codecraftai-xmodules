@@ -12,7 +12,8 @@ __credits__ = []
 
 
 
-from typing import Union
+from typing import List, Union
+
 
 def parse_bool(val: Union[str, bytes]) -> bool:
     """
@@ -33,6 +34,23 @@ def parse_bool(val: Union[str, bytes]) -> bool:
 
     return rtnval
 
+def parse_seperated_list(val: Union[str, bytes], seperator: str=",", normalize: bool=True) -> List[str]:
+    """
+        Parse a string that is a seperated list.
+    """
+
+    val = safe_as_str(val)
+
+    rtn_list = val.split(sep=seperator)
+
+    if normalize:
+        split_items = rtn_list
+        
+        rtn_list = []
+        for item in split_items:
+            rtn_list.append(item.strip())
+
+    return rtn_list
 
 def safe_as_bytes(val: Union[str, bytes]) -> bytes:
     """
