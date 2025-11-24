@@ -15,6 +15,7 @@ __credits__ = []
 
 from typing import Any, Callable, Dict, List, Optional, Protocol, Union
 
+import enum
 import re
 
 
@@ -87,19 +88,26 @@ class ValueConverter(Protocol):
     def __call__(self, string_value: str) -> Any:
         return
 
+class VariableSource(enum.Flag):
+    ENVIRONMENT = 1
+    SETTINGS = 2
+    BOTH = 3
+
 
 class VariableDesc:
     """
         Describes an application variable that is loaded from the settings file or from the environment variables
     """
 
-    def __init__(self, *, name: str, section: str='DEFAULT', default: str=None, overrides: bool=True, context_path: Optional[str]=None):
+    def __init__(self, *, name: str, section: str='DEFAULT', default: str=None, overrides: bool=True, context_path: Optional[str]=None,
+                 source: VariableSource=VariableSource.BOTH):
         self._name = assert_variable_name(name)
         self._section = assert_section_name(section)
         self._default = default
-        self._context_path = context_path
         self._overrides = overrides
-
+        self._context_path = context_path
+        self._source = source
+    
         self._key = f"{self._section}->{self._name}"
         return
     
