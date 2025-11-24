@@ -100,9 +100,8 @@ class VariableDesc:
         Describes an application variable that is loaded from the settings file or from the environment variables
     """
 
-    def __init__(self, *, name: str, section: str='DEFAULT', default: str=None, overrides: bool=True, context_path: Optional[str]=None,
+    def __init__(self, *, section: str='DEFAULT', default: str=None, overrides: bool=True, context_path: Optional[str]=None,
                  source: VariableSource=VariableSource.BOTH, converter: Optional[ValueConverter]=None):
-        self._name = assert_variable_name(name)
         self._section = assert_section_name(section)
         self._default = default
         self._overrides = overrides
@@ -110,7 +109,9 @@ class VariableDesc:
         self._source = source
         self._converter = converter
     
-        self._key = f"{self._section}->{self._name}"
+        self._name = None
+        self._key = None
+        self._owner = None
         return
     
     @property
@@ -165,6 +166,20 @@ class VariableDesc:
             A flags `VariableSource` flags value that indicates which sources can be used for this variable. 
         """
         return self._source
+
+    def __set_name__(self, owner: type, name: str) -> None:
+        """
+            Captures the class and attribute name this reader is bound to.
+        """
+        
+        assert_variable_name(name)
+
+        self._owner = owner
+        self._name = name
+
+        self._key = f"{self._section}->{self._name}"
+
+        return
 
     def __repr__(self):
         rval = f"AppVar(name='{self._name}', section='{self._section}')"

@@ -46,24 +46,30 @@ class TestXVariables(unittest.TestCase):
         return
 
     def test_variable_desc_validates_names(self):
-        var_desc = VariableDesc(name="APP_SETTING", section="DEFAULT")
+        class SampleVariables:
+            APP_SETTING = VariableDesc(section="DEFAULT")
+
+        var_desc = SampleVariables.APP_SETTING
         self.assertEqual(var_desc.name, "APP_SETTING")
         self.assertEqual(var_desc.section, "DEFAULT")
+        self.assertEqual(var_desc.key, "DEFAULT->APP_SETTING")
         return
 
     def test_variable_desc_preserves_metadata(self):
         def to_upper(value):
             return value.upper()
 
-        var_desc = VariableDesc(
-            name="FEATURE_FLAG",
-            section="FEATURES",
-            default="false",
-            overrides=False,
-            context_path="features.flag",
-            source=VariableSource.ENVIRONMENT,
-            converter=to_upper
-        )
+        class SampleVariables:
+            FEATURE_FLAG = VariableDesc(
+                section="FEATURES",
+                default="false",
+                overrides=False,
+                context_path="features.flag",
+                source=VariableSource.ENVIRONMENT,
+                converter=to_upper
+            )
+
+        var_desc = SampleVariables.FEATURE_FLAG
 
         self.assertEqual(var_desc.key, "FEATURES->FEATURE_FLAG")
         self.assertEqual(var_desc.default, "false")
@@ -86,7 +92,10 @@ class TestVariableReader(unittest.TestCase):
                 call_record["owner"] = owner
                 return f"value-for-{self._var_desc.name}"
 
-        var_desc = VariableDesc(name="CUSTOM", section="DEFAULT")
+        class VariableDeclarations:
+            CUSTOM = VariableDesc(section="DEFAULT")
+
+        var_desc = VariableDeclarations.CUSTOM
 
         class SampleVariables:
             CUSTOM = SampleReader(var_desc)
@@ -108,7 +117,10 @@ class TestVariableReader(unittest.TestCase):
                 call_record["owner"] = owner
                 return "instance-value"
 
-        var_desc = VariableDesc(name="BOUND", section="DEFAULT")
+        class VariableDeclarations:
+            BOUND = VariableDesc(section="DEFAULT")
+
+        var_desc = VariableDeclarations.BOUND
 
         class SampleVariables:
             BOUND = SampleReader(var_desc)
@@ -132,7 +144,10 @@ class TestVariableReader(unittest.TestCase):
             def perform_read(self, instance, owner):
                 return "irrelevant"
 
-        var_desc = VariableDesc(name="EXPECTED", section="DEFAULT")
+        class VariableDeclarations:
+            EXPECTED = VariableDesc(section="DEFAULT")
+
+        var_desc = VariableDeclarations.EXPECTED
 
         with self.assertRaises(AssertionError):
             class SampleVariables:
