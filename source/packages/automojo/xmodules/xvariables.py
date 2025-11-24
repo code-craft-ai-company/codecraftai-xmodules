@@ -89,6 +89,7 @@ class ValueConverter(Protocol):
         return
 
 class VariableSource(enum.Flag):
+    NONE = 0
     ENVIRONMENT = 1
     SETTINGS = 2
     BOTH = 3
