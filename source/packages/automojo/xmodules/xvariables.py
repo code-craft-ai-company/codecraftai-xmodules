@@ -13,7 +13,7 @@ __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
 
-from typing import Any, List, Optional, Protocol, Union
+from typing import Any, Callable, List, Optional, Protocol, Union
 
 import re
 
@@ -151,6 +151,69 @@ class VariableDesc:
 
     def __str__(self):
         return self._name
+
+
+class VariableReader:
+    """
+        Class that establishes a way to declaratively read variables from the application variable storage.
+    """
+
+    def __init__(self, var_desc: VariableDesc, *, converter: Optional[ValueConverter] = None):
+        """
+            Initializes a variable reader descriptor that operates on a :class:`VariableDesc`.
+
+            :param var_desc: The :class:`VariableDesc` describing the variable being read.
+            :param converter: Optional callable used to convert string values before returning them.
+        """
+        if not isinstance(var_desc, VariableDesc):
+            errmsg = "The parameter 'var_desc' must be an instance of VariableDesc."
+            raise AssertionError(errmsg)
+
+        self._var_desc = var_desc
+        self._converter = converter
+        self._owner: Optional[type] = None
+        return
+
+    def __set_name__(self, owner: type, name: str) -> None:
+        """
+            Captures the class and attribute name this reader is bound to.
+        """
+        self._owner = owner
+        assert_variable_name(name)
+        if self._var_desc.name != name:
+            errmsg = (
+                f"VariableDesc name '{self._var_desc.name}' does not match attribute name '{name}'."
+            )
+            raise AssertionError(errmsg)
+        return
+
+    def __call__(self, instance: Optional[object] = None, owner: Optional[type] = None) -> Any:
+        """
+            Resolves the value for this variable by delegating to :meth:`perform_read`.
+        """
+        target_owner = owner if owner is not None else self._owner
+
+        resolved_value = self.perform_read(self._var_desc, instance, target_owner)
+        if resolved_value is None and self._var_desc.default is not None:
+            resolved_value = self._var_desc.default
+
+        if self._converter is not None and isinstance(resolved_value, str):
+            resolved_value = self._converter(resolved_value)
+
+        return resolved_value
+
+    def __get__(self, instance: Optional[object], owner: Optional[type] = None) -> Any:
+        """
+            Supports descriptor access so referencing the attribute triggers the reader call.
+        """
+        return self(instance, owner)
+
+    def perform_read(self, var_desc: VariableDesc, instance: Optional[object], owner: Optional[type]) -> Any:
+        """
+            Overloadable hook used by derived classes to fetch the value for the given variable.
+        """
+        raise NotImplementedError("Derived classes must implement 'perform_read'")
+
 
 
 class VariableSet:
