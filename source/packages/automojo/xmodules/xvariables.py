@@ -126,6 +126,13 @@ class VariableDesc:
         return self._default
 
     @property
+    def key(self) -> str:
+        """
+            The key to use when storing and retrieving the variable description.
+        """
+        return self._key
+
+    @property
     def name(self) -> str:
         """
             The name associated with this variable
@@ -145,13 +152,13 @@ class VariableDesc:
             The configuration file section to look for this variable in.
         """
         return self._section
-
+    
     @property
-    def key(self) -> str:
+    def source(self) -> VariableSource:
         """
-            The key to use when storing and retrieving the variable description.
+            A flags `VariableSource` flags value that indicates which sources can be used for this variable. 
         """
-        return self._key
+        return self._source
 
     def __repr__(self):
         rval = f"AppVar(name='{self._name}', section='{self._section}')"
