@@ -13,7 +13,9 @@ __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
 
-from typing import Any, Iterable, List, Optional, MutableMapping
+from typing import Any, Iterable, List, Optional
+
+from collections.abc import MutableMapping
 
 import json
 import re
