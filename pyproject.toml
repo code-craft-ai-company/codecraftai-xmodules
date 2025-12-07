@@ -24,7 +24,7 @@ automojo-waiting = { git = "https://github.com/automationmojo/automojo-waiting.g
 
 [[tool.poetry.source]]
 name = "automationmojo"
-url = "https://pypi.pkg.github.com/automationmojo"
+url = "https://pypi.pkg.github.com/automationmojo/simple"
 priority = "primary"
 
 [[tool.poetry.source]]
