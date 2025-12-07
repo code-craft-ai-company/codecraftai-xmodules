@@ -1,0 +1,45 @@
+name: Publish Python Package to Github Packages
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+          python-version: '3.11'
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        version: latest
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+    - name: Install Dependencies
+      run: poetry install --no-interaction --no-root
+    - name: Configure Poetry for GitHub Packages authentication
+      env:
+        # Use the built-in token provided by GitHub Actions for auth
+        GITHUB_TOKEN: ${{ secrets.GH_PUBLISH_TOKEN }}
+      run: |
+        # Define the custom GitHub repository URL
+        GH_REGISTRY_URL="pypi.pkg.github.com{{ github.repository_owner }}"
+
+        # Add the GitHub registry as a source for this project in CI context
+        # This tells poetry where to find the auth scope for 'github'
+        poetry config repositories.github $GH_REGISTRY_URL
+
+        # Set the credentials for the 'github' repository using the GITHUB_TOKEN
+        poetry config http-basic.github ${{ github.actor }} $GITHUB_TOKEN
+
+    - name: Build and Publish package to GitHub Packages
+      # 'github' here matches the arbitrary name used in the 'poetry config repositories.github' command above
+      run: poetry publish --build --repository github
