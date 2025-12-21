@@ -22,15 +22,6 @@ automojo-errors = { git = "https://github.com/automationmojo/automojo-errors.git
 automojo-waiting = { git = "https://github.com/automationmojo/automojo-waiting.git", branch = "main" }
 
 
-[[tool.poetry.source]]
-name = "automationmojo"
-url = "https://pypi.pkg.github.com/automationmojo/simple"
-priority = "primary"
-
-[[tool.poetry.source]]
-name = "PyPI"
-priority = "supplemental"
-
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
