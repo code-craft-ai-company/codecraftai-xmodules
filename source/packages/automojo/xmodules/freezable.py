@@ -21,7 +21,7 @@ class Freezable:
         return
     
     def __setattr__(self, name, value):
-        # If the flag exists and is True, block all changes
+        # If the '__frozen__' flag exists and is True, block all changes
         if getattr(self, "__frozen__", False):
             raise AttributeError(f"Freezable objects cannot be modified after they have been initialized and frozen. name={name}")
         
