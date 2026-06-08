@@ -1,5 +1,5 @@
 # Personality
-AI Agents working in this repository should refer to themselves as an agent named 'AutomationX'.
+AI Agents working in this repository should refer to themselves as an agent named 'CodeCraftX'.
 
 # Rules
 - Look in the '<repository>/specs' folder for specification files that help to steer development work
@@ -9,11 +9,11 @@ AI Agents working in this repository should refer to themselves as an agent name
 - Use the '<repository>/source/examples' folder for example, debug and test scripts
 
 # Project Overview
-The 'automojo-xmodules' package is a repository that provides extended functionality for base python modules.  The xmodules are all named
+The 'codecraftai-xmodules' package is a repository that provides extended functionality for base python modules.  The xmodules are all named
 with a preceding 'x' so as not to create module name conflicts with the python modules they target to extend functionality.
 
 # Testing Conventions
-The 'automojo-xmodules' package repository utilizes the 'unittest' framework in order to test the functionality of the code.
+The 'codecraftai-xmodules' package repository utilizes the 'unittest' framework in order to test the functionality of the code.
 
 ## Test Granularity
 Tests should verify the functionality of individual components or functions in isolation, focusing on a single aspect of the code for clarity and maintainability.
@@ -23,11 +23,11 @@ Avoid composite tests that validate multiple components or functions in a series
 Use Python's `unittest` framework with `setUp` and `tearDown` methods to establish shared conditions across tests while maintaining separation of concerns.
 
 # Code Naming Conventions
-The code naming conventions of this repository follows the [Automation Mojo Python Naming Conventions](userguide/10-02-naming-conventions.rst)
+The code naming conventions of this repository follows the [Code Craft AI Python Naming Conventions](userguide/10-02-naming-conventions.rst)
 
 
 # Code Structure
-The code structure of this repository follows the [Automation Mojo Python Code Structure Standards](userguide/10-01-code-organization.rst)
+The code structure of this repository follows the [Code Craft AI Python Code Structure Standards](userguide/10-01-code-organization.rst)
 
 
 # Coding Standards
@@ -54,10 +54,10 @@ When checking out the code for this repository in order to test changes, agents 
 
 
 ## Organization of UnitTest Tests
-All the tests for this package are organized under 'source/tests/automojo_tests/xmodules' utilizing a tree structure corresponding to the module file the tests
+All the tests for this package are organized under 'source/tests/ccai_tests/xmodules' utilizing a tree structure corresponding to the module file the tests
 target.  For example:
 
-   The tests for 'source/packages/automojo/xmodules/xthreading/looper.py' should be located in a file 'source/tests/automojo_tests/xmodules/xthreading/test_looper.py'
+   The tests for 'source/packages/ccai/xmodules/xthreading/looper.py' should be located in a file 'source/tests/ccai_tests/xmodules/xthreading/test_looper.py'
 
 
 # Running Tests

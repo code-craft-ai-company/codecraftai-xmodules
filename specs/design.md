@@ -2,16 +2,16 @@
 
 ## Overview
 
-The `automojo-xmodules` package is a comprehensive Python library that provides extended functionality for base Python modules. The package follows a naming convention where all extended modules are prefixed with 'x' to prevent module name conflicts with standard Python modules. This design document analyzes the architecture, components, and design patterns used throughout the codebase.
+The `codecraftai-xmodules` package is a comprehensive Python library that provides extended functionality for base Python modules. The package follows a naming convention where all extended modules are prefixed with 'x' to prevent module name conflicts with standard Python modules. This design document analyzes the architecture, components, and design patterns used throughout the codebase.
 
 ## Architecture
 
 ### Package Structure
 
-The package is organized under `source/packages/automojo/xmodules/` with the following structure:
+The package is organized under `source/packages/ccai/xmodules/` with the following structure:
 
 ```
-automojo/xmodules/
+ccai/xmodules/
 ├── Core Utilities (root level)
 ├── eventing/          # Event-driven programming support
 ├── xcollections/      # Enhanced collection types
@@ -273,4 +273,4 @@ Context management uses singleton pattern for global state sharing.
 
 ## Conclusion
 
-The `automojo-xmodules` package provides a well-architected set of extensions to Python's standard library, with particular focus on testing, debugging, and automation scenarios. The design emphasizes reliability, debuggability, and clear interfaces while maintaining thread safety and performance considerations. The modular architecture allows for independent use of components while providing integrated functionality when used together.
+The `codecraftai-xmodules` package provides a well-architected set of extensions to Python's standard library, with particular focus on testing, debugging, and automation scenarios. The design emphasizes reliability, debuggability, and clear interfaces while maintaining thread safety and performance considerations. The modular architecture allows for independent use of components while providing integrated functionality when used together.

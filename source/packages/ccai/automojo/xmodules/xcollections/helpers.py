@@ -1,0 +1,36 @@
+"""
+.. module:: helpers
+    :platform: Darwin, Linux, Unix, Windows
+    :synopsis: Module which contains helper functions for working with collections
+
+.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+"""
+
+__author__ = "Myron Walker"
+__copyright__ = "Copyright 2025, Code Craft AI LLC"
+__credits__ = []
+
+
+from typing import Any
+
+
+def insert_into_ordered_list_ascending(ordered_list: list, item: Any):
+    """
+        Takes a list of similar items that are already sorted in ascending order
+        and inserts the 'item' parameter into the list in the correct order.
+
+        :param ordered_list: The sorted list to insert into.
+        :param item: The item to insert into the list.
+    """
+    index = None
+    for idx, nxt in enumerate(ordered_list):
+        if nxt > item:
+            index = idx
+            break
+
+    if index is not None:
+        ordered_list.insert(index, item)
+    else:
+        ordered_list.append(item)
+
+    return
