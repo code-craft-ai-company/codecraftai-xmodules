@@ -3,10 +3,10 @@
 ## 1. Project Overview
 
 ### 1.1 Purpose
-The `automojo-xmodules` package shall provide extended functionality for base Python modules, specifically designed for testing tools and test frameworks. The package shall prioritize debuggability over performance and readability over conciseness.
+The `codecraftai-xmodules` package shall provide extended functionality for base Python modules, specifically designed for testing tools and test frameworks. The package shall prioritize debuggability over performance and readability over conciseness.
 
 ### 1.2 Scope
-This document defines the functional and non-functional requirements for the automojo-xmodules package, covering core utilities, event-driven programming, enhanced collections, advanced logging, threading utilities, and multiprocessing enhancements.
+This document defines the functional and non-functional requirements for the codecraftai-xmodules package, covering core utilities, event-driven programming, enhanced collections, advanced logging, threading utilities, and multiprocessing enhancements.
 
 ### 1.3 Target Audience
 - Test automation engineers

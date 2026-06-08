@@ -1,8 +1,8 @@
 ==========================================
-Automojo XModules Overview
+CodeCraftAI XModules Overview
 ==========================================
 
-The ``automojo-xmodules`` package contains utility modules that extend
+The ``codecraftai-xmodules`` package contains utility modules that extend
 standard Python libraries. Each module name begins with ``x`` to avoid
 collisions with the Python modules they extend.
 
@@ -22,7 +22,7 @@ Provided Extensions
 - **xthreading** – Thread utilities including a worker "Looper" pool and synchronization primitives such as read/write locks.
 - **xzipfile** – Helper for creating zip archives of folders.
 
-These modules are located under ``source/packages/automojo/xmodules`` and are used throughout Automation Mojo projects.
+These modules are located under ``source/packages/ccai/xmodules`` and are used throughout Code Craft AI projects.
 
 =================
 Code Organization
