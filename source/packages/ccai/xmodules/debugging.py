@@ -64,7 +64,7 @@ def debugger_wellknown_breakpoint_entry(debugger: str, breakpoint_name: str, con
 
     if breakpoint_name in configured_breakpoints:
         if debugger == DEBUGGER.PDB:
-            # The debug flag was passed on the commandline so we break here.'.format(current_indent))
+            # The debug flag was passed on the commandline so we break here.
             import pdb
             pdb.set_trace()
         elif debugger == DEBUGGER.DEBUGPY:
@@ -72,7 +72,7 @@ def debugger_wellknown_breakpoint_entry(debugger: str, breakpoint_name: str, con
 
             invscode = in_vscode_debugger()
 
-            # The remote debug flag was passed on the commandline so we break here.'.format(current_indent))
+            # The remote debug flag was passed on the commandline so we break here.
             import debugpy
             if invscode:
                 debugpy.listen(("0.0.0.0", DEFAULT_DEBUG_PORT))
@@ -168,7 +168,6 @@ class DebugPyAssistant():
         while self._running:
 
             debugpy.wait_for_client()
-            debugpy.breakpoint()
 
             # While we are connected to the debugger, have the debug assistant
             # thread loop

@@ -39,6 +39,7 @@ def validate_path_name(path: str) -> List[str]:
         parts = list(mobj)
 
     return parts
+
 class MergeMap(MutableMapping):
 
     def __init__(self, *maps: List[MutableMapping]):
