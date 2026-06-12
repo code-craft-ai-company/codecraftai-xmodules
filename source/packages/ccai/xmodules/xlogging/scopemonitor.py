@@ -26,7 +26,7 @@ from ccai.xmodules.xlogging.monitoredscope import MonitoredScope
 DEFAULT_MONITORED_SCOPE_NOTIFY_DELAY = timedelta(seconds=60)
 
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 class ScopeMonitor:

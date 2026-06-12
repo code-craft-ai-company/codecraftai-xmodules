@@ -49,7 +49,10 @@ class DictMap:
 
     @property
     def is_root(self) -> bool:
-        rtnval = True if self._root_ref is not None else False
+        # The root node is constructed with root_ref=None; child nodes are given
+        # a weakref to the root. A node is therefore the root exactly when it has
+        # no root_ref.
+        rtnval = True if self._root_ref is None else False
         return rtnval
 
 

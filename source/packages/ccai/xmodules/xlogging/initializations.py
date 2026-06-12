@@ -52,7 +52,6 @@ def logging_create_branch_logger(logger_name: str, logfilename: str, log_level: 
             target_logger.removeHandler(hndl)
         target_logger.addHandler(file_handler)
 
-    print("blah")
 
     return
 

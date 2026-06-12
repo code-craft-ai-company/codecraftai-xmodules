@@ -26,7 +26,7 @@ import time
 from enum import Enum
 
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 DEFAULT_DEBUG_PORT = 5678
@@ -75,7 +75,7 @@ def debugger_wellknown_breakpoint_entry(debugger: str, breakpoint_name: str, con
             # The remote debug flag was passed on the commandline so we break here.
             import debugpy
             if invscode:
-                debugpy.listen(("0.0.0.0", DEFAULT_DEBUG_PORT))
+                debugpy.listen(("127.0.0.1", DEFAULT_DEBUG_PORT))
                 debugpy.wait_for_client()
             debugpy.breakpoint()
 
@@ -108,7 +108,7 @@ def debugger_wellknown_breakpoint_code_append(debugger: str, breakpoint_name: st
             code_lines.append('{}# The remote debug flag was passed on the commandline so we break here.'.format(current_indent))
             code_lines.append('{}import debugpy'.format(current_indent))
             if invscode:
-                code_lines.append('{}debugpy.listen(("0.0.0.0", {}))'.format(current_indent, DEFAULT_DEBUG_PORT))
+                code_lines.append('{}debugpy.listen(("127.0.0.1", {}))'.format(current_indent, DEFAULT_DEBUG_PORT))
                 code_lines.append('{}debugpy.wait_for_client()'.format(current_indent))
             code_lines.append('{}debugpy.breakpoint()'.format(current_indent))
 
@@ -125,7 +125,7 @@ class DebugPyAssistant():
     """
 
     def __init__(self, name: str = "DebugPyAssistant",
-                 *, endpoint=("0.0.0.0", PORT_DEBUGPY_ASSISTANT)) -> None:
+                 *, endpoint=("127.0.0.1", PORT_DEBUGPY_ASSISTANT)) -> None:
         """
             Starts a daemon thread exposing a ``debugpy`` endpoint.
 

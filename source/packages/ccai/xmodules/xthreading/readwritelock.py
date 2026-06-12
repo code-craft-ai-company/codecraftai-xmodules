@@ -13,6 +13,8 @@ __copyright__ = "Copyright 2023, Myron W Walker"
 __credits__ = []
 
 
+from typing import Optional
+
 import threading
 import time
 
@@ -41,15 +43,18 @@ class ReadWriteLock:
         self._writers_waiting = 0
         return
 
-    def acquire_read(self, timeout=None):
+    def acquire_read(self, timeout: Optional[float]=None) -> None:
         """
             Method called by a thread to acquire read access on the :class:`ReadWriteLock`.
+
+            :param timeout: Optional maximum seconds to wait for the lock. ``None``
+                (the default) waits indefinitely.
         """
         self._read_gate.wait()
 
         tid = threading.get_ident()
         start_time = time.time()
-        stop_time = start_time + timeout
+        stop_time = start_time + timeout if timeout is not None else None
 
         try:
             self._lock.acquire()
@@ -63,11 +68,13 @@ class ReadWriteLock:
 
                     self._lock.release()
                     try:
-                        time_left = stop_time - time.time()
-                        if time_left < 0:
-                            raise TimeoutError("Timeout waiting on read lock.")
-
-                        self._read_gate.wait(timeout=time_left)
+                        if stop_time is not None:
+                            time_left = stop_time - time.time()
+                            if time_left < 0:
+                                raise TimeoutError("Timeout waiting on read lock.")
+                            self._read_gate.wait(timeout=time_left)
+                        else:
+                            self._read_gate.wait()
                     finally:
                         self._lock.acquire()
 
@@ -81,13 +88,16 @@ class ReadWriteLock:
 
         return
 
-    def acquire_write(self, timeout=None):
+    def acquire_write(self, timeout: Optional[float]=None) -> None:
         """
             Method called by a thread to acquire write access on the :class:`ReadWriteLock`.
+
+            :param timeout: Optional maximum seconds to wait for the lock. ``None``
+                (the default) waits indefinitely.
         """
         tid = threading.get_ident()
         start_time = time.time()
-        stop_time = start_time + timeout
+        stop_time = start_time + timeout if timeout is not None else None
 
         # Block new readers from starting to read
         self._read_gate.clear()
@@ -100,11 +110,13 @@ class ReadWriteLock:
                     self._lock.release()
                     try:
 
-                        time_left = stop_time - time.time()
-                        if time_left < 0:
-                            raise TimeoutError("Timeout waiting on write lock.")
-
-                        self._write_gate.acquire(timeout=time_left)
+                        if stop_time is not None:
+                            time_left = stop_time - time.time()
+                            if time_left < 0:
+                                raise TimeoutError("Timeout waiting on write lock.")
+                            self._write_gate.acquire(timeout=time_left)
+                        else:
+                            self._write_gate.acquire()
 
                     finally:
                         self._lock.acquire()

@@ -16,7 +16,7 @@ import time
 
 from datetime import datetime
 
-DATETIME_FORMAT_FILESYSTEM = "%Y-%m-%dT%H%MS%S.%f"
+DATETIME_FORMAT_FILESYSTEM = "%Y-%m-%dT%H%M%S.%f"
 
 DATETIME_FORMAT_TIMESTAMP = "%Y-%m-%dT%H:%M:%S.%f"
 

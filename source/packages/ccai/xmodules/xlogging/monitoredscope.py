@@ -28,7 +28,7 @@ from ccai.xmodules.xformatting import split_and_indent_lines
 
 DEFAULT_MONITORED_SCOPE_NOTIFY_DELAY = timedelta(seconds=60)
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 class MonitoredScope:

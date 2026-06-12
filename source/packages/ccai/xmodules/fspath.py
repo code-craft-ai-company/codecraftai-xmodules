@@ -24,8 +24,6 @@ TRANSLATE_TABLE_NORMALIZE_FOR_PATH = str.maketrans({
     ";": " "
 })
 
-{'/r': ' ', '/n': ' ', '/t': ' '}
-
 DEFAULT_PATH_EXPANSIONS = [
     os.path.expanduser,
     os.path.expandvars,
@@ -66,7 +64,7 @@ def collect_python_modules(search_dir: str, max_depth=None) -> List[str]:
     search_dir = os.path.abspath(search_dir)
     search_dir_len = len(search_dir)
 
-    for root, _, files in os.walk(search_dir, topdown=True):
+    for root, dirs, files in os.walk(search_dir, topdown=True):
 
         if max_depth is not None:
             dir_leaf = root[search_dir_len:].strip(os.path.sep)
@@ -74,8 +72,15 @@ def collect_python_modules(search_dir: str, max_depth=None) -> List[str]:
             if dir_leaf != '':
                 dir_leaf_parts = dir_leaf.split(os.path.sep)
                 depth = len(dir_leaf_parts)
-                if depth > max_depth:
-                    break
+
+            if depth >= max_depth:
+                # Topdown walk: prune subdirectories so we do not descend past
+                # max_depth, rather than break-ing out of the entire walk (which
+                # silently dropped valid same-depth files in sibling subtrees).
+                dirs[:] = []
+
+            if depth > max_depth:
+                continue
 
         for fname in files:
             fbase, fext = os.path.splitext(fname)

@@ -67,23 +67,26 @@ class EventedVariable:
         self._data_type = data_type
         self._default = default
         self._allowed_list = allowed_list
-        self._timestamp = None
-        
+        self._timestamp = timestamp
+
         if not evented:
             errmsg = "EventedVariable constructor was called for a variabled that is not evented."
             raise ValueError(errmsg)
 
         self._expires = None
 
-        if self._value is not None and timestamp is None:
-            self._timestamp  = datetime.now()
+        # When a value is supplied without an explicit timestamp, stamp it now so
+        # the variable is reported as Valid (not UnInitialized) and created/updated
+        # reflect when the value was set.
+        if self._value is not None and self._timestamp is None:
+            self._timestamp = datetime.now()
 
         if value is None and default is not None:
             self._value = default
 
-        self._created = timestamp
-        self._updated = timestamp
-        self._changed = timestamp
+        self._created = self._timestamp
+        self._updated = self._timestamp
+        self._changed = self._timestamp
         return
 
     @property

@@ -149,9 +149,10 @@ class MergeMap(MutableMapping):
 
                         for nxtval in nxtcand:
 
-                            if isinstance(nxtval, list) or isinstance(nxtcand, tuple):
+                            if isinstance(nxtval, list) or isinstance(nxtval, tuple):
                                 cmpval = [v for v in nxtval]
-                                cmpval = json.dumps(cmpval.sort())
+                                cmpval.sort()
+                                cmpval = json.dumps(cmpval)
 
                             elif isinstance(nxtval, dict):
                                 cmpval = json.dumps(nxtval, sort_keys=True)
@@ -199,9 +200,9 @@ class MergeMap(MutableMapping):
             if key in nm:
                 kfound = True
                 del nm[key]
-        
-        if kfound is not None:
-            raise KeyError(f'Key not found in the first mapping: {key!r}')
+
+        if not kfound:
+            raise KeyError(f'Key not found in any mapping: {key!r}')
 
         return
 

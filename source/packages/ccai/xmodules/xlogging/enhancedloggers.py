@@ -98,7 +98,7 @@ class EnhancedLogger:
         """
         Convenience method for logging an ERROR with exception information.
         """
-        self.exception(msg, *args, exc_info=exc_info, **kwargs)
+        self._logger.exception(msg, *args, exc_info=exc_info, **kwargs)
         return
 
     def fatal(self, msg, *args, **kwargs):
@@ -132,8 +132,8 @@ class EnhancedLogger:
         __name__ rather than a literal string.
         """
         rv = self._logger.getChild(suffix)
-        return
-    
+        return rv
+
     def getEffectiveLevel(self):
         """
         Get the effective level for this logger.
@@ -184,6 +184,7 @@ class EnhancedLogger:
         Is this logger enabled for level 'level'?
         """
         rv = self._logger.isEnabledFor(level)
+        return rv
 
     def log(self, level, msg, *args, **kwargs):
         """
@@ -202,7 +203,7 @@ class EnhancedLogger:
         A factory method which can be overridden in subclasses to create
         specialized LogRecords.
         """
-        rv = self._logger(name, level, fn, lno, msg, args, exc_info, func=func, extra=extra, sinfo=sinfo)
+        rv = self._logger.makeRecord(name, level, fn, lno, msg, args, exc_info, func=func, extra=extra, sinfo=sinfo)
         return rv
 
     def removeHandler(self, hdlr):
