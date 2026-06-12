@@ -12,7 +12,7 @@ Provided Extensions
 - **xcollections** – Case-insensitive dictionaries and context management helpers for shared automation state.
 - **xconvert** – Safe string/bytes conversions and boolean parsing.
 - **xdatetime** – Convenience functions for timestamps and formatted time strings.
-- **xfspath** – Path expansion helpers that combine common filesystem path operations.
+- **fspath** – Path expansion helpers that combine common filesystem path operations.
 - **xformatting** – Utilities for indenting multi-line text and formatting command results.
 - **ximport** – Functions to import modules dynamically by name or from a file.
 - **xinspect** – Helpers for introspecting functions and modules at runtime.
