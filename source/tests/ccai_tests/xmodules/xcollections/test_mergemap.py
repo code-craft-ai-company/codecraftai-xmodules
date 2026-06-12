@@ -54,10 +54,15 @@ class TestMergeMap(unittest.TestCase):
         flat = mm.flatten()
         self.assertEqual(flat, {'a': {'x': 1, 'y': 2}})
 
-    def test_delete_raises_key_error(self):
+    def test_delete_existing_key_succeeds(self):
+        mm = MergeMap({'a': 1})
+        del mm['a']
+        self.assertNotIn('a', mm)
+
+    def test_delete_missing_key_raises_key_error(self):
         mm = MergeMap({'a': 1})
         with self.assertRaises(KeyError):
-            del mm['a']
+            del mm['nonexistent']
 
 
 if __name__ == '__main__':

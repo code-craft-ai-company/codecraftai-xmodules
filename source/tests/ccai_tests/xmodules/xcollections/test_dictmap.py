@@ -50,8 +50,9 @@ class TestDictMap(unittest.TestCase):
     def test_root_and_is_root_properties(self):
         dmap = DictMap({})
         child = dmap.lookup('/child', default={})
-        self.assertTrue(child.is_root)
-        self.assertFalse(dmap.is_root)
+        # The root node (no root_ref) is the root; the child (with a root_ref) is not.
+        self.assertFalse(child.is_root)
+        self.assertTrue(dmap.is_root)
         self.assertIs(child.root, dmap)
 
 
