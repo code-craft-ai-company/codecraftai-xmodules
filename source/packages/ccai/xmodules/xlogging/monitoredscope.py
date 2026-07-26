@@ -26,6 +26,15 @@ from ccai.waiting.waitmodel import TimeoutContext
 
 from ccai.xmodules.xformatting import split_and_indent_lines
 
+
+# The singleton ScopeMonitor, created lazily by the first MonitoredScope that
+# enters.  This binding must live in THIS module: the `global` statement in
+# MonitoredScope.__enter__ resolves against this module's namespace, so the
+# binding that used to live in scopemonitor.py was invisible to it and every
+# use raised NameError.  (ScopeMonitor itself is imported lazily inside
+# __enter__ because scopemonitor.py imports MonitoredScope from here.)
+global_scope_monitor = None
+
 DEFAULT_MONITORED_SCOPE_NOTIFY_DELAY = timedelta(seconds=60)
 
 logger = logging.getLogger(__name__)
@@ -78,6 +87,9 @@ class MonitoredScope:
         global global_scope_monitor
 
         if global_scope_monitor is None:
+            # Deferred: scopemonitor.py imports MonitoredScope from this module,
+            # so a top-level import here would be circular.
+            from ccai.xmodules.xlogging.scopemonitor import ScopeMonitor
             global_scope_monitor = ScopeMonitor()
 
         self._timeout_ctx.mark_begin()

@@ -125,5 +125,3 @@ class ScopeMonitor:
 
         return
 
-
-global_scope_monitor = None
