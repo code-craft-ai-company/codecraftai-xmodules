@@ -2,35 +2,37 @@
 
 [[package]]
 name = "codecraftai-errors"
-version = "0.0.2"
+version = "1.0.0"
 description = "Code Craft AI - Errors"
 optional = false
 python-versions = ">=3.10,<4.0"
 groups = ["main"]
-files = []
-develop = false
+files = [
+    {file = "codecraftai_errors-1.0.0-py3-none-any.whl", hash = "sha256:6fa27c28e7e9eae33fde10d6ebc0c1e9f600bfafd124b3f199de6db5f587d18c"},
+    {file = "codecraftai_errors-1.0.0.tar.gz", hash = "sha256:45c6a526741e0920b356e796fd3379656d4b5dd018c58c02676783f4dcc4096d"},
+]
 
 [package.source]
-type = "git"
-url = "https://github.com/code-craft-ai-company/codecraftai-errors.git"
-reference = "main"
-resolved_reference = "bbc01a9b9e7602c225ffab0716bc6e56b472e4b4"
+type = "legacy"
+url = "https://code-craft.ai/licensed-repository/simple"
+reference = "codecraftai"
 
 [[package]]
 name = "codecraftai-waiting"
-version = "0.0.1"
+version = "1.0.0"
 description = "Code Craft AI - Waiting Package"
 optional = false
 python-versions = ">=3.10,<4.0"
 groups = ["main"]
-files = []
-develop = false
+files = [
+    {file = "codecraftai_waiting-1.0.0-py3-none-any.whl", hash = "sha256:cbf00b8183498a9bad4d5e3fe9f03b8610d13caca3c8371b01348f698f3df674"},
+    {file = "codecraftai_waiting-1.0.0.tar.gz", hash = "sha256:8156278ecdbd2e4d5e6ab9d2efb23fac3ead873d588af90bccc186376dc6b0cf"},
+]
 
 [package.source]
-type = "git"
-url = "https://github.com/code-craft-ai-company/codecraftai-waiting.git"
-reference = "main"
-resolved_reference = "071b83b5ff6ce8cb8966aee7e6a2de97a6e926d1"
+type = "legacy"
+url = "https://code-craft.ai/licensed-repository/simple"
+reference = "codecraftai"
 
 [[package]]
 name = "debugpy"
@@ -75,4 +77,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "5c303c5409b4918efb6813e9132af749f9f98f042fff32495f530515ebc26ee4"
+content-hash = "77627cf9745527962e62a23e5024ec89742eff17cd481eada32078fa2d0429a8"
