@@ -1,15 +1,40 @@
-name: Publish Python Package to Github Packages
+# Release-event packaging check.
+#
+# This workflow does NOT publish. Publishing is owned by ``publish.yml``,
+# which fires when the version in pyproject.toml changes on main (and on
+# demand via workflow_dispatch) and twine-uploads to the Code Craft AI
+# package repository at https://artifacts.code-craft.ai/repository/legacy.
+#
+# Why publishing is not duplicated here: a GitHub release is normally
+# created AFTER the version bump that ``publish.yml`` already acted on, so
+# a second upload of the same version would be rejected with 409 "Package
+# file already exists" and fail the run every time. One publish trigger,
+# one publish path.
+#
+# History, so this is not "fixed" back into a broken state: both workflows
+# in this family previously ran
+# ``poetry publish --repository github`` against
+# ``https://pypi.pkg.github.com/<owner>``. That endpoint does not exist —
+# GitHub Packages offers no PyPI-compatible Python registry — so every
+# release event failed. The private index it was reaching for now exists;
+# it is the artifacts service named above, and ``publish.yml`` is how
+# packages get into it.
+#
+# What is left here is worth keeping on its own: a release event rebuilds
+# the distribution and fails loudly if the tagged tree no longer packages
+# cleanly.
+
+name: Release Build Validation
 
 on:
   release:
     types: [created]
 
 jobs:
-  build-and-publish:
+  build-validation:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
@@ -25,21 +50,11 @@ jobs:
         virtualenvs-in-project: true
     - name: Install Dependencies
       run: poetry install --no-interaction --no-root
-    - name: Configure Poetry for GitHub Packages authentication
-      env:
-        # Use the built-in token provided by GitHub Actions for auth
-        GITHUB_TOKEN: ${{ secrets.GH_PUBLISH_TOKEN }}
+    - name: Build package (validate packaging)
+      run: poetry build
+    - name: Report built artifacts
       run: |
-        # Define the custom GitHub repository URL
-        GH_REGISTRY_URL="pypi.pkg.github.com{{ github.repository_owner }}"
-
-        # Add the GitHub registry as a source for this project in CI context
-        # This tells poetry where to find the auth scope for 'github'
-        poetry config repositories.github $GH_REGISTRY_URL
-
-        # Set the credentials for the 'github' repository using the GITHUB_TOKEN
-        poetry config http-basic.github ${{ github.actor }} $GITHUB_TOKEN
-
-    - name: Build and Publish package to GitHub Packages
-      # 'github' here matches the arbitrary name used in the 'poetry config repositories.github' command above
-      run: poetry publish --build --repository github
+        echo "Packaging validated. These artifacts were built but NOT published:"
+        ls -l dist/
+        echo ""
+        echo "Publishing is handled by publish.yml on a pyproject.toml version change."
