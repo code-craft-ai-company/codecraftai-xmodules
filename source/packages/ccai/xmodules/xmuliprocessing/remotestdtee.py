@@ -11,14 +11,22 @@ __copyright__ = "Copyright 2025, Code Craft AI LLC"
 __credits__ = []
 
 
-from typing import Callable, TextIO
+from typing import TextIO
 
 import os
-import sys
 
 from multiprocessing import Queue
 
 from io import StringIO
+
+
+# Python text streams always carry '\n' as the line terminator; the platform
+# 'os.linesep' ('\r\n' on Windows) is only ever produced by the underlying
+# binary layer of a real file.  A tee that sits in front of the text layer
+# must therefore split on '\n', otherwise on Windows no line is ever
+# recognised and every write is held back until the exit-time flush.
+LINE_TERMINATOR = "\n"
+
 
 class RemoteStdTee(StringIO):
     def __init__(self, queue: Queue, orig_file: TextIO):
@@ -34,7 +42,7 @@ class RemoteStdTee(StringIO):
         self._queue = queue
         self._orig_file = orig_file
         return
-    
+
     def flush(self):
         """
             Flushes the internal buffer and forwards any buffered content to the
@@ -43,6 +51,7 @@ class RemoteStdTee(StringIO):
         buffer = self.getvalue()
         if len(buffer) > 0:
             self._queue.put(f"[{self._pid}] {buffer}{os.linesep}")
+        self.seek(0)
         self.truncate()
         return self._orig_file.flush()
 
@@ -53,11 +62,11 @@ class RemoteStdTee(StringIO):
 
             :param s: Text to write.
         """
-        nlidx = s.find(os.linesep)
+        nlidx = s.find(LINE_TERMINATOR)
         if nlidx < 0:
             StringIO.write(self, s)
         else:
-            nlidx = s.rindex(os.linesep)
+            nlidx = s.rindex(LINE_TERMINATOR)
             rems = s[nlidx + 1:]
             qmsg = self.getvalue() + s[:nlidx]
             self.seek(0)
@@ -66,10 +75,3 @@ class RemoteStdTee(StringIO):
                 StringIO.write(self, rems)
             self._queue.put(f"[{self._pid}] {qmsg}{os.linesep}")
         return self._orig_file.write(s)
-
-
-def piped_process_main(entry_point: Callable, stdout_queue: Queue, stderr_queue: Queue, *args):
-    sys.stdout = RemoteStdTee(stdout_queue, sys.__stdout__)
-    sys.stderr = RemoteStdTee(stderr_queue, sys.__stderr__)
-    entry_point(*args)
-    return
