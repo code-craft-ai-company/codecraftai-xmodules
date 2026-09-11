@@ -7,6 +7,11 @@ from ccai.xmodules.xthreading.looperqueue import LooperQueueShutdown
 from ccai.xmodules.xthreading.looperpool import LooperPool
 
 
+# Upper bound on any wait for a worker thread; a stuck worker fails the test
+# instead of hanging the run.
+THREAD_JOIN_TIMEOUT = 5
+
+
 class DummyLooper(Looper):
     def __init__(self, queue, processed, **kwargs):
         super().__init__(queue, **kwargs)
@@ -16,7 +21,7 @@ class DummyLooper(Looper):
         self.processed.append(packet)
 
     def join(self):
-        self._thread.join()
+        self._thread.join(timeout=THREAD_JOIN_TIMEOUT)
 
 
 class TestLooperPool(unittest.TestCase):
@@ -26,6 +31,7 @@ class TestLooperPool(unittest.TestCase):
             pool._queue.push_work(LooperQueueShutdown())
         for looper in pool._threads:
             looper.join()
+            self.assertFalse(looper._thread.is_alive())
 
     def test_pool_starts_and_scales(self):
         processed = []
@@ -36,7 +42,10 @@ class TestLooperPool(unittest.TestCase):
         self.assertEqual(len(pool._threads), 1)
         pool.push_work('one')
         pool.push_work('two')
+        deadline = time.monotonic() + THREAD_JOIN_TIMEOUT
         while len(processed) < 2:
+            if time.monotonic() > deadline:
+                self.fail(f"Pool did not process both packets within {THREAD_JOIN_TIMEOUT} seconds: {processed!r}")
             time.sleep(0.05)
         self.assertEqual(set(processed), {'one', 'two'})
         self.assertEqual(len(pool._threads), 2)

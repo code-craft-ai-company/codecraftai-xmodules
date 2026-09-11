@@ -6,6 +6,11 @@ import time
 from ccai.xmodules.xthreading.readwritelock import ReadWriteLock
 from ccai.errors.exceptions import SemanticError
 
+
+# Upper bound on any wait for a helper thread; a stuck thread fails the test
+# instead of hanging the run.
+THREAD_JOIN_TIMEOUT = 5
+
 class TestReadWriteLock(unittest.TestCase):
 
     def test_readers_and_writer(self):
@@ -34,9 +39,12 @@ class TestReadWriteLock(unittest.TestCase):
         t2.start()
         tw.start()
         
-        t1.join()
-        t2.join()
-        tw.join()
+        t1.join(timeout=THREAD_JOIN_TIMEOUT)
+        t2.join(timeout=THREAD_JOIN_TIMEOUT)
+        tw.join(timeout=THREAD_JOIN_TIMEOUT)
+        self.assertFalse(t1.is_alive())
+        self.assertFalse(t2.is_alive())
+        self.assertFalse(tw.is_alive())
         
         # writer should acquire after readers released
         self.assertTrue(order.index('w_acq') > order.index('r_rel'))

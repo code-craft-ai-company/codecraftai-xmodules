@@ -6,6 +6,11 @@ from datetime import datetime
 
 from ccai.xmodules.eventing.eventedvariablesink import EventedVariableSink
 
+
+# Upper bound on any wait for a helper thread; a stuck thread fails the test
+# instead of hanging the run.
+THREAD_JOIN_TIMEOUT = 5
+
 class SimpleSink(EventedVariableSink):
     def invalidate_subscription(self, scope=None):
         pass
@@ -30,7 +35,8 @@ class TestEventing(unittest.TestCase):
         moment = datetime.now()
         value = var.wait_for_update(moment, timeout=2, interval=0.05)
         self.assertEqual(value, 5)
-        t.join()
+        t.join(timeout=THREAD_JOIN_TIMEOUT)
+        self.assertFalse(t.is_alive())
 
         sink2 = SimpleSink({'value': {}}, auto_subscribe=False)
         var2 = sink2.lookup_event_variable('value')
@@ -41,7 +47,8 @@ class TestEventing(unittest.TestCase):
         t2.start()
         val2 = var2.wait_for_value(timeout=2, interval=0.05)
         self.assertEqual(val2, 7)
-        t2.join()
+        t2.join(timeout=THREAD_JOIN_TIMEOUT)
+        self.assertFalse(t2.is_alive())
 
 if __name__ == '__main__':
     unittest.main()

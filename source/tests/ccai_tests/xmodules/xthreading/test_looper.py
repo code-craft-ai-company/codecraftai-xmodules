@@ -1,8 +1,12 @@
 import unittest
-import time
 
 from ccai.xmodules.xthreading.looper import Looper
 from ccai.xmodules.xthreading.looperqueue import LooperQueue, LooperQueueShutdown
+
+
+# Upper bound on any wait for a worker thread; a stuck worker fails the test
+# instead of hanging the run.
+THREAD_JOIN_TIMEOUT = 5
 
 
 class DummyLooper(Looper):
@@ -14,7 +18,7 @@ class DummyLooper(Looper):
         self.processed.append(packet)
 
     def join(self):
-        self._thread.join()
+        self._thread.join(timeout=THREAD_JOIN_TIMEOUT)
 
 
 class TestLooper(unittest.TestCase):
@@ -29,8 +33,8 @@ class TestLooper(unittest.TestCase):
         queue.push_work('work')
         queue.push_work(LooperQueueShutdown())
         looper.join()
-        self.assertEqual(processed, ['work'])
         self.assertFalse(looper._thread.is_alive())
+        self.assertEqual(processed, ['work'])
 
 
 if __name__ == '__main__':
