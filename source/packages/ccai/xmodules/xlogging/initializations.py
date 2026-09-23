@@ -5,7 +5,7 @@ __credits__ = []
 
 
 
-from typing import Dict, List, Optional, Type, Union
+from typing import Dict, List, Optional, Union
 
 import logging
 import logging.handlers
@@ -109,7 +109,7 @@ def reinitialize_logging_as_interactive(location: LoggingLocation, file_level: U
             logging_create_branch_logger(logger_name, logfilename, log_level)
         except Exception: # pylint: disable=broad-except
             errmsg = "Error configuration branch logger." + os.linesep
-            errmsg = traceback.format_exc()
+            errmsg += traceback.format_exc()
             root_logger.error(errmsg)
 
     # Verify our configuration by calling 'logging.getLogger()' got get the default logger
@@ -210,7 +210,7 @@ def reinitialize_logging_to_standard_file(location: LoggingLocation, console_lev
             logging_create_branch_logger(logger_name, logfilename, log_level)
         except Exception: # pylint: disable=broad-except
             errmsg = "Error configuration branch logger." + os.linesep
-            errmsg = traceback.format_exc()
+            errmsg += traceback.format_exc()
             root_logger.error(errmsg)
 
     # Verify our configuration by calling 'logging.getLogger()' got get the default logger
@@ -298,7 +298,7 @@ def reinitialize_logging_as_service(location: LoggingLocation, console_level: Un
             logging_create_branch_logger(logger_name, logfilename, log_level)
         except Exception: # pylint: disable=broad-except
             errmsg = "Error configuration branch logger." + os.linesep
-            errmsg = traceback.format_exc()
+            errmsg += traceback.format_exc()
             root_logger.error(errmsg)
 
     # Verify our configuration by calling 'logging.getLogger()' got get the default logger

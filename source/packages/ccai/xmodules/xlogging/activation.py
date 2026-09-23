@@ -16,12 +16,10 @@ from typing import Dict, List, Optional, Union
 
 import logging
 import os
-import sys
 
 from enum import Enum
 
 from ccai.errors.exceptions import SemanticError
-from ccai.xmodules.fspath import expand_path
 
 from ccai.xmodules.xlogging.parameters import LoggingLocation
 

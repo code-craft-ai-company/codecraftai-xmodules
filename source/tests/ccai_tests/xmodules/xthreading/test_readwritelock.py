@@ -47,7 +47,7 @@ class TestReadWriteLock(unittest.TestCase):
         self.assertFalse(tw.is_alive())
         
         # writer should acquire after readers released
-        self.assertTrue(order.index('w_acq') > order.index('r_rel'))
+        self.assertGreater(order.index('w_acq'), order.index('r_rel'))
 
         return
 

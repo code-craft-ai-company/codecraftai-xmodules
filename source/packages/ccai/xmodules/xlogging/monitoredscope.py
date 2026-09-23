@@ -120,7 +120,7 @@ class MonitoredScope:
             Perform comparison between MonitoredScope(left) >= MonitoredScope(right)
         """
         if not isinstance(other, MonitoredScope):
-            raise ValueError(self.ERROR_COMPARISON_TYPE_MESSAGE)
+            raise TypeError(self.ERROR_COMPARISON_TYPE_MESSAGE)
 
         return self._timeout_ctx.end_time >= other._timeout_ctx.end_time
 
@@ -129,7 +129,7 @@ class MonitoredScope:
             Perform comparison between MonitoredScope(left) > MonitoredScope(right)
         """
         if not isinstance(other, MonitoredScope):
-            raise ValueError(self.ERROR_COMPARISON_TYPE_MESSAGE)
+            raise TypeError(self.ERROR_COMPARISON_TYPE_MESSAGE)
 
         return self._timeout_ctx.end_time > other._timeout_ctx.end_time
 
@@ -138,7 +138,7 @@ class MonitoredScope:
             Perform comparison between MonitoredScope(left) <= MonitoredScope(right)
         """
         if not isinstance(other, MonitoredScope):
-            raise ValueError(self.ERROR_COMPARISON_TYPE_MESSAGE)
+            raise TypeError(self.ERROR_COMPARISON_TYPE_MESSAGE)
 
         return self._timeout_ctx.end_time <= other._timeout_ctx.end_time
 
@@ -147,7 +147,7 @@ class MonitoredScope:
             Perform comparison between MonitoredScope(left) < MonitoredScope(right)
         """
         if not isinstance(other, MonitoredScope):
-            raise ValueError(self.ERROR_COMPARISON_TYPE_MESSAGE)
+            raise TypeError(self.ERROR_COMPARISON_TYPE_MESSAGE)
 
         return self._timeout_ctx.end_time < other._timeout_ctx.end_time
 

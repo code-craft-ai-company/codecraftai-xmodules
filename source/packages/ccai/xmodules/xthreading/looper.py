@@ -105,7 +105,6 @@ class Looper:
 
         self._running = True
         start_gate.set()
-        start_gate = None
 
         while True:
 

@@ -12,8 +12,6 @@ __copyright__ = "Copyright 2025, Code Craft AI LLC"
 __credits__ = []
 
 
-import traceback
-
 import sys
 import importlib
 import importlib.util
@@ -64,7 +62,7 @@ def import_file(name: str, loc: str, by_file_only=False) -> ModuleType:
                     mod = importlib.import_module(name)
                     break
                 except ImportError:
-                    errmsg = traceback.format_exc()
+                    # Importing by name failed; fall through and load the module from its file location below.
                     pass
 
             spec = importlib.util.spec_from_file_location(name, str(loc))

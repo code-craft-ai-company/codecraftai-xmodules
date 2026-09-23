@@ -38,6 +38,7 @@ def get_caller_function_name():
         caller_stack = inspect.stack()[2]
         caller_func_name = caller_stack.frame.f_code.co_name
     except IndexError:
+        # There is no grandparent stack frame available; return None as documented.
         pass
 
     return caller_func_name

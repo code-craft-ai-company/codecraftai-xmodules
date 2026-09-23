@@ -19,8 +19,6 @@ import multiprocessing
 
 from logging.handlers import RotatingFileHandler
 
-from logging import FileHandler
-
 from ccai.xmodules.xlogging import activation
 from ccai.xmodules.xlogging.parameters import LoggingLocation
 from ccai.xmodules.xlogging.activation import (
@@ -117,7 +115,7 @@ class TestActivateServiceLogging(ActivationTestBase):
 
         logger = logging.getLogger()
         rfh = [h for h in logger.handlers if isinstance(h, RotatingFileHandler)]
-        self.assertTrue(len(rfh) > 0)
+        self.assertGreater(len(rfh), 0)
         self.assertTrue(os.path.isfile(os.path.join(self.tmpdir, "service.log")))
         return
 
@@ -136,8 +134,8 @@ class TestActivateStandardFileLogging(ActivationTestBase):
         activate_standard_file_logging(location=loc, console_level=logging.WARNING, file_level=logging.DEBUG)
 
         logger = logging.getLogger()
-        fh = [h for h in logger.handlers if isinstance(h, FileHandler)]
-        self.assertTrue(len(fh) > 0)
+        fh = [h for h in logger.handlers if isinstance(h, logging.FileHandler)]
+        self.assertGreater(len(fh), 0)
         self.assertTrue(os.path.isfile(os.path.join(self.tmpdir, "cmd.log")))
         return
 
@@ -159,7 +157,7 @@ class TestActivateInteractiveConsoleLogging(ActivationTestBase):
 
         fh = []
         for h in logger.handlers:
-            if isinstance(h, FileHandler):
+            if isinstance(h, logging.FileHandler):
                 fh.append(h)
 
         sh = []
@@ -167,7 +165,7 @@ class TestActivateInteractiveConsoleLogging(ActivationTestBase):
             if getattr(h, 'stream', None) in (sys.stdout, sys.stderr):
                 sh.append(h)
 
-        self.assertTrue(len(fh) > 0)
+        self.assertGreater(len(fh), 0)
         self.assertEqual(len(sh), 0)
         self.assertTrue(os.path.isfile(os.path.join(self.tmpdir, "int.log")))
         return

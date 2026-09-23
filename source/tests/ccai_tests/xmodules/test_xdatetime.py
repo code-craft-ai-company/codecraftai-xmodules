@@ -16,7 +16,7 @@ class TestXDatetime(unittest.TestCase):
     def test_current_time_millis(self):
         now = time.time() * 1000
         ct = current_time_millis()
-        self.assertTrue(abs(ct - now) < 1000)
+        self.assertLess(abs(ct - now), 1000)
 
     def test_format_and_parse_datetime(self):
         now_dt = datetime.now()

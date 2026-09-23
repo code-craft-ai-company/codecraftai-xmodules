@@ -1,7 +1,7 @@
 import unittest
 
 from ccai.errors.exceptions import LooperError
-from ccai.xmodules.xthreading.looperqueue import LooperQueue, LooperQueueShutdown
+from ccai.xmodules.xthreading.looperqueue import LooperQueue
 
 
 class TestLooperQueue(unittest.TestCase):
